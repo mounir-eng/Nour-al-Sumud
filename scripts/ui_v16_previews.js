@@ -1,0 +1,10 @@
+const {chromium}=require('/vercel/sandbox/node_modules/playwright');const BASE=process.env.QA_BASE||'http://127.0.0.1:8879';
+const shots=[
+ {url:'/landing_component/index.html',path:'/data/student_samed_landing_v16_desktop.png',viewport:{width:1440,height:920}},
+ {url:'/landing_component/index.html',path:'/data/student_samed_landing_v16_mobile.png',viewport:{width:390,height:844}},
+ {url:'/onboarding_component/index.html',path:'/data/student_samed_account_v16_desktop.png',viewport:{width:1240,height:900},blank:true},
+ {url:'/onboarding_component/index.html',path:'/data/student_samed_account_v16_mobile.png',viewport:{width:390,height:844},blank:true},
+ {url:'/dashboard_component/index.html',path:'/data/student_samed_dashboard_v16_desktop.png',viewport:{width:1440,height:920}},
+ {url:'/dashboard_component/index.html',path:'/data/student_samed_dashboard_v16_mobile.png',viewport:{width:390,height:844}},
+];
+(async()=>{const browser=await chromium.launch({headless:true,executablePath:'/usr/local/bin/chromium',args:['--no-sandbox']});for(const shot of shots){const page=await browser.newPage({viewport:shot.viewport});await page.goto(BASE+shot.url,{waitUntil:'networkidle'});await page.addStyleTag({content:'*,*::before,*::after{animation:none!important;transition:none!important}'});if(shot.blank)await page.evaluate(()=>populate({profile:{name:'',grade:12,subjects:['phys','chem']},has_password:false,error:''}));await page.evaluate(()=>scrollTo(0,0));await page.waitForTimeout(250);await page.screenshot({path:shot.path,fullPage:true});await page.close()}const modal=await browser.newPage({viewport:{width:1200,height:850}});await modal.goto(BASE+'/landing_component/index.html',{waitUntil:'networkidle'});await modal.addStyleTag({content:'*,*::before,*::after{animation:none!important;transition:none!important}'});await modal.locator('#howWorksBtn').click();await modal.waitForTimeout(150);await modal.screenshot({path:'/data/student_samed_how_it_works_v16.png',fullPage:false});await browser.close();console.log('UI_V16_DIRECT_PREVIEWS_OK')})().catch(e=>{console.error(e.stack||e);process.exit(1)});
