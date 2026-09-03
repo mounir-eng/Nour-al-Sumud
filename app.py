@@ -1,6 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from ui_theme_v13 import apply_ui_theme
+from exercise_ui_v18 import (apply_exercise_ui_v18, render_exercise_header_v18, render_question_card_v18, render_exercise_footer_v18)
 import random
 import time
 import json
@@ -27,6 +28,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+# طبقة v18 تُحمّل مبكرًا كي لا تبقى الصفحة على التصميم القديم.
+apply_exercise_ui_v18()
 
 # ==========================================================
 # 2. التنسيق (CSS)
@@ -1281,7 +1285,7 @@ questions_db = [
                 "prefix": "K₁ = ( ⅔ ", "suffix": " )² / (2m₁)",
                 "target": "p2",
                 "completed_display": "K₁ = ( ⅔ p₂ )² / (2m₁)",
-                "hint": "عوّض ��ن p₁ بالرمز p₂ حسب معطى السؤال (اكتب: p2)"
+                "hint": "عوّض عن p₁ بالرمز p₂ حسب معطى السؤال (اكتب: p2)"
             },
             {
                 "num": 2, "type": "symbol",
@@ -1301,7 +1305,7 @@ questions_db = [
             {
                 "num": 3, "type": "number",
                 "title": "الخطوة 3: حساب نسبة الطاقة الحركية (K₁ / K₂) عددياً",
-                "law": "بقسمة معادلة K₁ على K₂ واخت����ار الرموز المتشابهة (p₂ , m₁)",
+                "law": "بقسمة معادلة K₁ على K₂ واختصار الرموز المتشابهة (p₂ , m₁)",
                 "latex_preview": r"\frac{K_1}{K_2} = \mathbf{?}",
                 "micro": [
                     ("من الخطوة 1 بعد التربيع والاختصار:", "K₁ = (2/9) p₂² / m₁"),
@@ -1409,7 +1413,7 @@ questions_db = [
     },
     {
         "id": "q4", "type": "interactive",
-        "title": "السؤال الرا��ع: اصطدام كرة بالسقف وارتدادها",
+        "title": "السؤال الرابع: اصطدام كرة بالسقف وارتدادها",
         "text": "قُذفت كرة كتلتها (0.5 kg) رأسياً للأعلى بسرعة (12 m/s)، فاصطدمت بالسقف وارتدت بسرعة (6 m/s) بعد أن لامسته لمدة (0.1 s). إذا كان ارتفاع السقف (4 m) و g = 10 m/s²، احسب: 1) الدفع على الكرة أثناء اصطدامها بالسقف، 2) متوسط قوة دفع السقف للكرة.",
         "steps": [
             {
@@ -1482,7 +1486,7 @@ questions_db = [
     {
         "id": "q5", "type": "interactive",
         "title": "السؤال الخامس: زمن التحليق باستخدام نظرية الدفع والزخم",
-        "text": "قُذف جسم رأسياً للأعلى من سطح الأر�� بسرعة (10 m/s). احسب زمن التحليق للجسم باستخدام نظرية الدفع والزخم (g = 10 m/s²).",
+        "text": "قُذف جسم رأسياً للأعلى من سطح الأرض بسرعة (10 m/s). احسب زمن التحليق للجسم باستخدام نظرية الدفع والزخم (g = 10 m/s²).",
         "steps": [
             {
                 "num": 1, "title": "الخطوة 1: إيجاد زمن التحليق t",
@@ -1518,7 +1522,7 @@ questions_db = [
                     ('كتلة الجسم m (kg):', 'm = ?', '2'),
                 ],
                 "law": "المعادلة: v₀ = p₀ / m",
-                "simple_explain": "نق��أ من الرسم قيمة الزخم عند t=0 (وهي 10 kg.m/s) ونقسمها على الكتلة.",
+                "simple_explain": "نقرأ من الرسم قيمة الزخم عند t=0 (وهي 10 kg.m/s) ونقسمها على الكتلة.",
                 "prefix": "v0 = (",
                 "blanks": [
                     {"label": "p0", "target": 10.0, "suffix": ")/("},
@@ -1526,7 +1530,7 @@ questions_db = [
                 ],
                 "has_root": False,
                 "result_target": 5.0, "result_tol": 0.1,
-                "result_label": "اح��ب السرعة الابتدائية v₀ (m/s):",
+                "result_label": "احسب السرعة الابتدائية v₀ (m/s):",
                 "hint": "v₀ = 10 / 2 = 5 m/s"
             },
             {
@@ -1572,7 +1576,7 @@ questions_db = [
     {
         "id": "q7", "type": "interactive",
         "title": "السؤال السابع: قوة متغيرة على جسم متحرك",
-        "text": "أثّرت قوة متغيرة على جسم كتلته (4 kg) ومتحرك بسرعة (2 m/s) بحيث أصبحت سرعة الجسم (8 m/s) بعد 6 ثوانٍ. أوجد: 1) الدفع المؤثر خلال 6 ثوانٍ، 2) القوة العظمى F من الرسم المثلثي (F-t)، 3) متوسط قوة الدفع خلال 6 ��وان��.",
+        "text": "أثّرت قوة متغيرة على جسم كتلته (4 kg) ومتحرك بسرعة (2 m/s) بحيث أصبحت سرعة الجسم (8 m/s) بعد 6 ثوانٍ. أوجد: 1) الدفع المؤثر خلال 6 ثوانٍ، 2) القوة العظمى F من الرسم المثلثي (F-t)، 3) متوسط قوة الدفع خلال 6 ثوانٍ.",
         "steps": [
             {
                 "num": 1, "title": "الخطوة 1: إيجاد الدفع I خلال 6 ثوانٍ",
@@ -1805,7 +1809,7 @@ questions_db = [
                 ],
                 "has_root": False,
                 "result_target": 1.6, "result_tol": 0.05,
-                "result_label": "احسب السرعة ال��شتركة v' (m/s):",
+                "result_label": "احسب السرعة المشتركة v' (m/s):",
                 "hint": "v' = (40×2)/(40+10) = 80/50 = 1.6 m/s"
             }
         ]
@@ -1912,7 +1916,7 @@ questions_db = [
     {
         "id": "q15", "type": "proof",
         "title": "السؤال الخامس عشر: (إثبات) نسبة طاقتي القذيفة والمدفع",
-        "text": "قذيفة كتلتها (m) انطلقت أفقياً بسرعة (v) من فوهة مدفع ساكن كتلته (M). أثبت أن النسبة بين طاقة حركة المدفع Kc إلى طا��ة حركة القذيفة Kp مباشرة بعد الإطلاق تُعطى بالعلاقة: Kc / Kp = m / M",
+        "text": "قذيفة كتلتها (m) انطلقت أفقياً بسرعة (v) من فوهة مدفع ساكن كتلته (M). أثبت أن النسبة بين طاقة حركة المدفع Kc إلى طاقة حركة القذيفة Kp مباشرة بعد الإطلاق تُعطى بالعلاقة: Kc / Kp = m / M",
         "steps": [
             {
                 "num": 1, "type": "symbol", "case_sensitive": True,
@@ -2444,7 +2448,7 @@ DERIVE_STEPS = {
         ("عوّض بـ p₁ داخل عبارة K₁ — هذه هي العبارة المستعملة في هذه الخطوة:", "K₁ = ( ⅔ · p₂ )² / ( 2 · ? )", "m₁"),
     ],
     ("q2", 2): [
-        ("نفس ��لقانون المدروس مكتوباً بدلالة الزخم:", "K = p² / ( 2 · m )"),
+        ("نفس القانون المدروس مكتوباً بدلالة الزخم:", "K = p² / ( 2 · m )"),
         ("طبّقه على الجسم الثاني:", "K₂ = p₂² / ( 2 · ? )", "m₂"),
         ("المعطى: كتلة الجسم الثاني ضِعف كتلة الأول:", "m₂ = ? · m₁", "2"),
         ("عوّض بها داخل عبارة K₂ — هذه هي العبارة المستعملة:", "K₂ = p₂² / ( 2 · ? )", "2m₁"),
@@ -2618,7 +2622,7 @@ DERIVE_STEPS = {
     # ---------------------------------------------------------------- q13
     ("q13", 1): [
         ("القانون المدروس — نظرية الدفع والزخم:", "I = Δp = p₂ - p₁"),
-        ("نعتبر اتجاه ذهاب الكرة نحو الحا��ط موجباً، فالزخم قبل الارتطام:", "p₁ = m · ?", "v"),
+        ("نعتبر اتجاه ذهاب الكرة نحو الحائط موجباً، فالزخم قبل الارتطام:", "p₁ = m · ?", "v"),
         ("ترتد الكرة بـ 75% من سرعتها في الاتجاه المعاكس، فالزخم بعد الارتطام:", "p₂ = - 0.75 · m · ?", "v"),
         ("عوّض الزخمين في النظرية:", "I = - 0.75 · m · v - ?", "mv"),
         ("اجمع الحدّين المتشابهين:", "I = ?", "-1.75mv"),
@@ -2746,7 +2750,7 @@ def derive_html(qid, step):
         + "</div>"
     )
 
-def micro_html(step, final_mode="preview", field="micro", start=0, final_say=None, qid=""):
+def micro_html(step, final_mode="preview", field="micro", start=0, final_say=None, qid="", reveal=False):
     """صندوق الخطوات المبسّطة: يعوّض الطالب في كل خطوة حتى يصل للعبارة الكاملة"""
     micro = step.get(field) or []
     cs = "1" if step.get("case_sensitive") else "0"
@@ -2756,6 +2760,13 @@ def micro_html(step, final_mode="preview", field="micro", start=0, final_say=Non
         say = item[0] if len(item) > 0 else ""
         eq = item[1] if len(item) > 1 else ""
         ans = item[2] if len(item) > 2 else None
+        if ans is None and eq and "=" in str(eq) and "?" not in str(eq):
+            _lhs, _rhs = str(eq).rsplit("=", 1)
+            if _rhs.strip():
+                eq, ans = _lhs + "= ?", _rhs.strip()
+        if reveal and ans is not None:
+            eq = str(eq).replace("?", str(ans).split("|")[0])
+            ans = None
         n += 1
         attrs = ' class="micro-line"'
         if ans is not None:
@@ -2772,7 +2783,7 @@ def micro_html(step, final_mode="preview", field="micro", start=0, final_say=Non
         rows.append(
             '<div class="micro-line micro-final"><span class="micro-say"><span class="micro-num">'
             + str(n) + "</span>" + _fsay + "</span>"
-            + '<div class="eq-box">' + eq_html(step.get("latex_preview", "")) + "</div></div>"
+            + '<div class="eq-box">' + eq_html(step.get("latex_preview", "") if reveal else _mask_ans(step.get("latex_preview", ""))) + "</div></div>"
         )
     return '<div class="micro-box" data-mk="' + str(field) + '">' + "".join(rows) + "</div>"
 
@@ -2900,6 +2911,70 @@ def result_html(result_text, label: str = "✅ النتيجة", pre_html: bool =
     )
 
 
+SYMBOL_LIBRARY = [
+    "Δ", "ΔP", "Δt", "θ", "π", "×", "÷", "√", "²",
+    "³", "≈", "±", "→", "←", "°", "m/s", "m/s²", "kg",
+    "N", "N·s", "kg·m/s", "J", "−", "⁄", "⬜", "⌫", "مسح",
+]
+
+
+def _mask_ans(txt):
+    """يخفي طرف المعادلة الأيمن (الإجابة) حتى لا تُعرض قبل أن يكتبها الطالب."""
+    t = str(txt or "")
+    if not t or "?" in t or "=" not in t:
+        return t
+    head, _tail = t.rsplit("=", 1)
+    if not _tail.strip():
+        return t
+    return head + "= ?"
+
+
+def _hint_micro_lines(step, field="micro", keep_last_blank=True):
+    """يشرح خطوات الحل ويكشف معادلاتها ما عدا الفراغ الأخير."""
+    rows = step.get(field) or []
+    out = []
+    for i, item in enumerate(rows):
+        say = item[0] if len(item) > 0 else ""
+        eq = item[1] if len(item) > 1 else ""
+        ans = item[2] if len(item) > 2 else None
+        if ans is not None and "?" in str(eq):
+            eq = str(eq).replace("?", str(ans).split("|")[0])
+        if keep_last_blank and i == len(rows) - 1:
+            eq = _mask_ans(eq)
+        out.append("<li><b>" + str(i + 1) + ".</b> " + str(say) + ((" <code>" + str(eq) + "</code>") if eq else "") + "</li>")
+    return "".join(out)
+
+
+def rich_hint(step, level=1):
+    """تلميح موسّع: شرح + جزء من الحل يتزايد مع المستوى."""
+    parts = []
+    if step.get("law"):
+        parts.append("<div><b>القانون المستعمل:</b> " + str(step["law"]) + "</div>")
+    if step.get("simple_explain"):
+        parts.append("<div>💬 " + str(step["simple_explain"]) + "</div>")
+    micro_html_lines = _hint_micro_lines(step, "micro", keep_last_blank=(level < 3))
+    if micro_html_lines:
+        parts.append("<div><b>خطوات الحل مفصّلة:</b><ol class=\"hint-steps\">" + micro_html_lines + "</ol></div>")
+    if level >= 2:
+        lines2 = _hint_micro_lines(step, "micro2", keep_last_blank=(level < 3))
+        if lines2:
+            parts.append("<div><b>تابع:</b><ol class=\"hint-steps\">" + lines2 + "</ol></div>")
+        if step.get("blanks"):
+            sub = str(step.get("prefix", ""))
+            for b in step["blanks"]:
+                sub += "(" + str(b["target"]) + ")" + str(b.get("suffix", ""))
+            parts.append("<div><b>هكذا يكون التعويض:</b> <code>" + sub + "</code></div>")
+            if step.get("has_root"):
+                parts.append("<div><b>تحت الجذر:</b> <code>" + str(step.get("root_prefix", "")) + " " + str(step.get("root_target", "")) + " " + str(step.get("root_suffix", "")) + "</code></div>")
+            parts.append("<div>احسب بالترتيب: ما داخل الأقواس أولاً، ثم الضرب والقسمة، واكتب الناتج في خانة "
+                         + str(step.get("result_label", "النتيجة")).strip().rstrip(":") + ".</div>")
+    if step.get("hint"):
+        parts.append("<div><b>مفتاح الفكرة:</b> " + str(step["hint"]) + "</div>")
+    if level < 3:
+        parts.append("<div><small>اضغط 💡 مرة أخرى لشرح أوسع، أو اضغط «✅ الإجابة الصحيحة» لإدخالها تلقائياً في الفراغات.</small></div>")
+    return "".join(parts)
+
+
 def calc_points(attempts_count, hint_lvl):
     hint_deduction = {0: 0, 1: 1, 2: 3, 3: 5}.get(hint_lvl, 5)
     attempts_deduction = max(0, attempts_count - 1)
@@ -2943,7 +3018,7 @@ def reset_everything():
 # ==========================================================
 PROFILE_KEY = "samed-profile-v1"
 LOCAL_FIRST_VERSION = "local-first-pwa-zip-v1"
-DASHBOARD_UX_VERSION = "streamlit-dashboard-v15-stable-ux-footer"
+DASHBOARD_UX_VERSION = "streamlit-dashboard-v18.1-pwa-download"
 ANNUAL_PROGRAM = {
  "phys": {6:["القياس والوحدات","الحركة والسرعة","القوى من حولنا","الشغل والطاقة","الضوء والرؤية","الصوت"],7:["المادة وحالاتها","الحرارة ودرجة الحرارة","الآلات البسيطة","الكهرباء الساكنة","المغناطيسية"],8:["الحركة المنتظمة","القوة والاحتكاك","الضغط والكثافة","الطاقة وتحولاتها","الدارات الكهربائية"],9:["الحركة بتسارع ثابت","قوانين نيوتن","الشغل والقدرة","الموجات","التيار الكهربائي"],10:["المتجهات","الحركة في بعدين","قوانين نيوتن وتطبيقاتها","الشغل والطاقة والقدرة","مقدمة في الزخم"],11:["الحركة الرأسية والمقذوفات","الحركة الدائرية","الجاذبية الكونية","الموائع","الاهتزاز والموجات"],12:["الزخم الخطي والدفع","الكهرباء الساكنة","التيار والدارات","المجال المغناطيسي","الحث الكهرومغناطيسي","مقدمة الفيزياء الحديثة"]},
  "chem": {6:["المادة وخواصها","المخاليط والمحاليل","التغيرات الفيزيائية والكيميائية","الماء ودورته"],7:["بناء الذرة","العناصر والمركبات","مقدمة الجدول الدوري","الأحماض والقواعد حولنا"],8:["التركيب الذري والإلكترونات","الروابط الكيميائية","التفاعلات الكيميائية","المحاليل والذائبية"],9:["المعادلات الكيميائية ووزنها","الأحماض والقواعد والأملاح","الأكسدة والاختزال","مقدمة الكيمياء العضوية"],10:["المول والحسابات الكيميائية","الجدول الدوري والدورية","أنواع الروابط","الغازات وقوانينها"],11:["الاتزان الكيميائي","سرعة التفاعل","الأحماض والقواعد وحساب pH","الكهروكيمياء"],12:["النموذج الذري والتركيب الإلكتروني","الكيمياء الحرارية","الكيمياء العضوية","البوليمرات","التحليل الكيميائي"]}
@@ -2962,23 +3037,34 @@ def _top_back(label="العودة"):
         st.session_state["samed_view"]="home";st.rerun()
 
 def _render_onboarding():
-    st.markdown("""<style>[data-testid='stHeader'],footer{display:none!important}.block-container{max-width:820px!important;padding-top:2rem!important}.reg-hero{background:linear-gradient(135deg,#082f49,#0f6d82);color:white;border-radius:24px;padding:24px;margin:10px 0 18px}.reg-hero h1{margin:0 0 7px}.reg-note{background:#fff8d8;border:1px solid #f2d36a;border-right:5px solid #f5bd1f;border-radius:14px;padding:12px;line-height:1.8}</style>""",unsafe_allow_html=True)
-    _top_back("صفحة البداية")
-    st.markdown("<div class='reg-hero'><h1>🛡️ أنشئ حسابك المحلي</h1><p>اسم، مستوى، ومادتان. لا بريد إلكتروني ولا استهلاك إضافي للبيانات.</p></div><div class='reg-note'>تُحفظ بيانات الحساب والتقدم على جهاز الطالب، وتعمل نسخة PWA بعد تحميل الوحدة حتى عند انقطاع الإنترنت.</div>",unsafe_allow_html=True)
+    st.markdown("""<style id="onboarding-parent-v16">[data-testid='stHeader'],[data-testid='stToolbar'],[data-testid='stDecoration'],footer,section[data-testid='stSidebar'],[data-testid='stSidebarCollapsedControl']{display:none!important}.stApp,[data-testid='stAppViewContainer']{background:#f8fafc!important;direction:rtl!important}section[data-testid='stMain'] .block-container,[data-testid='stMainBlockContainer']{width:100%!important;max-width:1220px!important;margin:0 auto!important;padding:0 12px 24px!important}[data-testid='stCustomComponentV1'],[data-testid='stCustomComponentV1'] iframe{display:block!important;width:100%!important;border:0!important;background:#f8fafc!important}</style>""",unsafe_allow_html=True)
     old=st.session_state.get("student_profile") or {}
-    with st.form("local_profile_form"):
-        name=st.text_input("اسم الطالب",value=old.get("name","") ,placeholder="اكتب اسمك")
-        grade=st.selectbox("الصف",list(range(6,13)),index=max(0,int(old.get("grade",12))-6),format_func=lambda x:"الصف "+GRADE_LABELS[x])
-        subjects=st.multiselect("المواد",["phys","chem"],default=old.get("subjects",["phys","chem"]),format_func=lambda x:"الفيزياء" if x=="phys" else "الكيمياء")
-        pin=st.text_input("رمز PIN من 4 أرقام",type="password",max_chars=4,placeholder="••••")
-        submit=st.form_submit_button("حفظ وفتح Dashboard",type="primary",use_container_width=True)
-    if submit:
-        if len(name.strip())<2: st.error("اكتب اسمًا من حرفين على الأقل.")
-        elif not subjects: st.error("اختر مادة واحدة على الأقل.")
-        elif not (pin.isdigit() and len(pin)==4): st.error("رمز PIN يجب أن يتكون من 4 أرقام.")
-        else:
-            profile={"id":old.get("id") or "local-"+uuid.uuid4().hex[:12],"name":name.strip(),"grade":grade,"subjects":subjects,"pinHash":hashlib.sha256(pin.encode()).hexdigest(),"mode":"local"}
-            st.session_state["student_profile"]=profile;st.session_state["student_name"]=profile["name"];st.session_state["samed_view"]="dashboard";st.rerun()
+    component=components.declare_component("student_samed_onboarding_v16",path=str(Path(__file__).with_name("onboarding_component")))
+    event=component(data={"profile":{"name":old.get("name",""),"grade":int(old.get("grade",12)),"subjects":old.get("subjects",["phys","chem"])},"has_password":bool(old.get("passwordHash") or old.get("pinHash")),"error":st.session_state.get("_onboarding_error","")},default=None,key="student_samed_onboarding_v16")
+    if isinstance(event,dict):
+        token=str(event.get("token","")).strip();action=str(event.get("action","")).strip()
+        if token and st.session_state.get("_onboarding_v16_token")!=token:
+            st.session_state["_onboarding_v16_token"]=token
+            if action=="back_home":
+                st.session_state.pop("_onboarding_error",None);st.session_state["samed_view"]="home";st.rerun()
+            if action=="save_profile" and isinstance(event.get("profile"),dict):
+                raw=event["profile"];name=str(raw.get("name","")).strip()
+                try: grade=int(raw.get("grade",12))
+                except Exception: grade=12
+                grade=grade if grade in GRADE_LABELS else 12
+                subjects=[s for s in raw.get("subjects",[]) if s in {"phys","chem"}]
+                password=str(raw.get("password","")).strip();confirm=str(raw.get("confirm","")).strip()
+                existing_hash=old.get("passwordHash") or old.get("pinHash")
+                error=""
+                if len(name)<2: error="اكتب اسمًا من حرفين على الأقل."
+                elif not subjects: error="اختر مادة واحدة على الأقل."
+                elif (not existing_hash or password or confirm) and len(password)<6: error="يجب أن تتكون كلمة المرور من 6 أحرف على الأقل."
+                elif (not existing_hash or password or confirm) and password!=confirm: error="كلمة المرور وتأكيدها غير متطابقين."
+                if error:
+                    st.session_state["_onboarding_error"]=error;st.rerun()
+                password_hash=hashlib.sha256(password.encode("utf-8")).hexdigest() if password else existing_hash
+                profile={"id":old.get("id") or "local-"+uuid.uuid4().hex[:12],"name":name,"grade":grade,"subjects":subjects,"passwordHash":password_hash,"mode":"local"}
+                st.session_state.pop("_onboarding_error",None);st.session_state["student_profile"]=profile;st.session_state["student_name"]=name;st.session_state["samed_view"]="dashboard";st.rerun()
     st.stop()
 
 def _unit_download_bytes(filename):
@@ -3007,18 +3093,19 @@ def _render_dashboard():
     physics_book_done = sum(1 for qid in physics_book_completed if str(qid).startswith("pb"))
     physics_review_done = sum(1 for qid in physics_review_completed if str(qid).startswith("pr"))
     physics_foundation_done = sum(1 for qid in physics_foundation_completed if str(qid).startswith("pf"))
-    physics_done = physics_foundation_done + physics_review_done + physics_book_done + physics_lesson_done
+    physics_required_done = physics_review_done + physics_book_done + physics_lesson_done
     chemistry_lesson_done = sum(1 for qid in chemistry_completed if str(qid).startswith("c"))
     chemistry_book_done = sum(1 for qid in textbook_completed if str(qid).startswith("tb"))
     chemistry_review_done = sum(1 for qid in chemistry_review_completed if str(qid).startswith("cr"))
     chemistry_foundation_done = sum(1 for qid in chemistry_foundation_completed if str(qid).startswith("cf"))
-    chemistry_done = chemistry_foundation_done + chemistry_review_done + chemistry_book_done + chemistry_lesson_done
-    physics_total, chemistry_total = 40, 51
+    chemistry_required_done = chemistry_review_done + chemistry_book_done + chemistry_lesson_done
+    # التأسيس دعم اختياري: يبقى تقدمه ونقاطه محفوظين، لكنه لا يقفل المسار ولا يخفض نسبة الإنجاز المطلوبة.
+    physics_total, chemistry_total = 32, 43
     selected_total = (physics_total if physics_live else 0) + (chemistry_total if chemistry_live else 0)
-    done = (physics_done if physics_live else 0) + (chemistry_done if chemistry_live else 0)
+    done = (physics_required_done if physics_live else 0) + (chemistry_required_done if chemistry_live else 0)
     pct = int(done * 100 / selected_total) if selected_total else 0
-    physics_pct = int(physics_done * 100 / physics_total) if physics_total else 0
-    chemistry_pct = int(chemistry_done * 100 / chemistry_total) if chemistry_total else 0
+    physics_pct = int(physics_required_done * 100 / physics_total) if physics_total else 0
+    chemistry_pct = int(chemistry_required_done * 100 / chemistry_total) if chemistry_total else 0
     xp = st.session_state.get("total_xp", 0) + st.session_state.get("physbook_total_xp", 0) + st.session_state.get("physfoundation_total_xp", 0) + st.session_state.get("physreview_total_xp", 0) + st.session_state.get("chem_total_xp", 0) + st.session_state.get("book_total_xp", 0) + st.session_state.get("chemfoundation_total_xp", 0) + st.session_state.get("chemreview_total_xp", 0)
     safe_name = (str(profile.get("name", "الطالب"))
                  .replace("&", "&amp;").replace("<", "&lt;")
@@ -3063,6 +3150,10 @@ def _render_dashboard():
     if action == "home":
         st.session_state["samed_view"] = "home"
         st.rerun()
+    if action == "contact":
+        st.session_state["_contact_return_page"] = "app.py"
+        st.session_state["_contact_return_view"] = "dashboard"
+        st.switch_page("pages/contact.py")
     if action:
         routes = {
             "phys_0": ("physics_foundation", "pages/physics_foundation.py"),
@@ -3085,21 +3176,28 @@ def _render_dashboard():
 # صفحة الهبوط المعتمدة حاليًا.
 if st.session_state.get("samed_view","home")=="home":
     st.markdown("""<style>[data-testid='stHeader'],[data-testid='stToolbar'],[data-testid='stDecoration'],footer{display:none!important}.stApp{background:#fff!important}.block-container{max-width:none!important;padding:0!important;margin:0!important}[data-testid='stElementContainer']{margin:0!important}iframe{display:block;width:100%!important;border:0!important}</style>""",unsafe_allow_html=True)
-    comp=components.declare_component("student_samed_local_first_v1",path=str(Path(__file__).with_name("landing_component")))
-    event=comp(default=None,key="student_samed_local_first_v1")
+    comp=components.declare_component("student_samed_local_first_v18",path=str(Path(__file__).with_name("landing_component")))
+    event=comp(default=None,key="student_samed_local_first_v18")
     if isinstance(event,dict):
         action=event.get("action");token=str(event.get("token",""))
         if action=="profile_loaded" and isinstance(event.get("profile"),dict):
-            st.session_state["student_profile"]=event["profile"];st.session_state["student_name"]=event["profile"].get("name","")
+            p=dict(event["profile"]);p["subjects"]=[{"physics":"phys","chemistry":"chem"}.get(s,s) for s in p.get("subjects",[]) if {"physics":"phys","chemistry":"chem"}.get(s,s) in {"phys","chem"}];st.session_state["student_profile"]=p;st.session_state["student_name"]=p.get("name","")
         elif token and st.session_state.get("_last_visual_event")!=token:
             st.session_state["_last_visual_event"]=token
             if action=="open_onboarding": st.session_state["samed_view"]="onboarding"
             elif action=="open_dashboard": st.session_state["samed_view"]="dashboard" if st.session_state.get("student_profile") else "onboarding"
             elif action=="open_momentum": st.session_state["samed_view"]="app" if st.session_state.get("student_profile") else "onboarding"
+            elif action=="open_contact":
+                st.session_state["_contact_return_page"]="app.py";st.session_state["_contact_return_view"]="home";st.switch_page("pages/contact.py")
             st.rerun()
     st.stop()
 if st.session_state.get("samed_view")=="onboarding": _render_onboarding()
 if st.session_state.get("samed_view")=="dashboard": _render_dashboard()
+
+render_exercise_header_v18(
+    subject="الفيزياء", track="تدريب إضافي", unit_title="الزخم الخطي والدفع",
+    current_page="app.py", tip=st.session_state["daily_tip"], subject_icon="⚛️",
+)
 
 # ==========================================================
 # 5. زر الملف الشخصي (نافذة منبثقة) في أعلى يمين الصفحة
@@ -3172,53 +3270,8 @@ with _pc_avatar:
 # ==========================================================
 # 6. الرأس والنصيحة اليومية
 # ==========================================================
-st.markdown("""
-<style>
-  .samed-header{
-      background: linear-gradient(135deg,#0f766e 0%,#059669 52%,#10b981 100%);
-      border-radius: 20px; padding: 18px 26px 16px; color:#fff;
-      box-shadow: 0 10px 26px rgba(5,150,105,.30);
-      margin-bottom: 14px; text-align: right;
-      border-right: 6px solid #fbbf24;
-  }
-  .samed-brand{ display:flex; align-items:center; gap:13px; }
-  .samed-mark{ font-size:36px; line-height:1; filter: drop-shadow(0 2px 5px rgba(0,0,0,.28)); }
-  .samed-txt b{ display:block; font-size:27px; font-weight:800;
-      letter-spacing:-.5px; line-height:1.3; color:#fff; }
-  .samed-txt i{ font-style:normal; display:block; font-size:12.5px;
-      color:rgba(255,255,255,.88); font-weight:600; line-height:1.5; }
-  .samed-slogan{ margin:11px 0 5px; font-size:15.5px; font-weight:700; color:#fde68a; }
-  .samed-now{ margin:0; font-size:12.5px; color:rgba(255,255,255,.82); font-weight:600; }
-  .samed-tags{ margin-top:10px; display:flex; flex-wrap:wrap; gap:7px; }
-  .samed-tags span{ font-size:11.5px; font-weight:700; padding:4px 10px;
-      border-radius:8px; background:rgba(255,255,255,.15); color:#fff; }
-  @media (max-width: 640px){
-      .samed-txt b{ font-size:21px; }
-      .samed-txt i{ font-size:11px; }
-  }
-</style>
-""", unsafe_allow_html=True)
+# يُعرض الرأس بعد حسم التوجيه، داخل صفحة التمارين فقط.
 
-st.markdown(f"""
-<div class="samed-header">
-    <div class="samed-brand">
-        <span class="samed-mark">{APP_ICON}</span>
-        <span class="samed-txt">
-            <b>{APP_NAME}</b>
-            <i>{APP_SUBTITLE}</i>
-        </span>
-    </div>
-    <p class="samed-slogan">« {APP_TAGLINE} »</p>
-    <p class="samed-now">📘 {APP_UNIT}</p>
-    <div class="samed-tags">
-        <span>📶 تعمل بدون إنترنت</span>
-        <span>💾 تحفظ تقدّمك</span>
-        <span>🆓 مجانية بالكامل</span>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown(f'<div class="tip-box">{st.session_state["daily_tip"]}</div>', unsafe_allow_html=True)
 
 # ==========================================================
 # 6.5 الصفحة الرئيسية للمنصة + التوجيه بين الواجهة والتمارين
@@ -3431,12 +3484,13 @@ if st.session_state["samed_view"] == "home":
 
     st.stop()
 
-# ---------- وضع التمارين: زر العودة إلى الواجهة ----------
-_bk1, _bk2 = st.columns([1, 4])
-with _bk1:
-    if st.button("← الصفحة الرئيسية", key="samed_back", use_container_width=True):
-        st.session_state["samed_view"] = "home"
-        st.rerun()
+# ---------- وضع التمارين: شريط الرجوع إلى لوحة الطالب ----------
+with st.container(key="exercise_nav"):
+    _bk1, _bk2 = st.columns([1, 4])
+    with _bk1:
+        if st.button("← لوحة الطالب", key="samed_back", use_container_width=True):
+            st.session_state["samed_view"] = "dashboard"
+            st.rerun()
 
 
 # ==========================================================
@@ -3446,14 +3500,15 @@ def display_title(item):
     icon = "🧮" if item["type"] == "interactive" else "📜"
     return f"{icon} {item['title']}"
 
-col_sel, col_toggle = st.columns([3, 1])
-with col_sel:
-    selected_title = st.selectbox(
-        "📌 اختر التمرين المراد حله تفاعلياً:",
-        [display_title(item) for item in questions_db]
-    )
-with col_toggle:
-    explain_mode = st.toggle("🔍 شرح مبسط", value=False)
+with st.container(key="exercise_controls"):
+    col_sel, col_toggle = st.columns([3, 1])
+    with col_sel:
+        selected_title = st.selectbox(
+            "📌 اختر التمرين المراد حله تفاعلياً:",
+            [display_title(item) for item in questions_db]
+        )
+    with col_toggle:
+        explain_mode = st.toggle("🔍 شرح مبسط", value=False)
 
 q = next(item for item in questions_db if display_title(item) == selected_title)
 qid = q["id"]
@@ -3503,16 +3558,13 @@ if qtype == "interactive":
 
     top_l, top_r = st.columns([4, 1])
     with top_l:
-        st.markdown(f"""
-        <div class="q-card">
-            <span class="type-chip-interactive">🧮 تمرين رقمي تفاعلي</span>
-            <h2>{q["title"]}</h2>
-            <p style="font-size:1.15rem;">{q["text"]}</p>
-            {figure_html(qid)}
-            <div class="qprogress-bg"><div class="qprogress-fill" style="width:{q_progress_pct}%;"></div></div>
-            <small>الخطوة {min(current_step_user_at, len(q["steps"]))} من {len(q["steps"])} &nbsp;|&nbsp; ⏱️ الوقت: {fmt_time(elapsed)}</small>
-        </div>
-        """, unsafe_allow_html=True)
+        # سلسلة متصلة تمنع Markdown من تفسير HTML المتداخل كنص برمجي ظاهر.
+        render_question_card_v18(
+            key=f"{qid}_interactive", title=q["title"], statement_html=q["text"],
+            figure_markup=figure_html(qid), progress_pct=q_progress_pct,
+            step_number=min(current_step_user_at, len(q["steps"])), total_steps=len(q["steps"]),
+            elapsed_label=fmt_time(elapsed), kind="interactive",
+        )
     with top_r:
         st.write("")
         if st.button("🔁 إعادة حل هذا التمرين", key=f"reset_{qid}", use_container_width=True):
@@ -3574,9 +3626,10 @@ if qtype == "interactive":
             attempts_so_far = st.session_state["attempts"].get(step_key, 0)
             hint_lvl_current = st.session_state["hint_level"].get(step_key, 0)
             potential_points = calc_points(attempts_so_far + 1, hint_lvl_current)
+            _revealed = st.session_state.setdefault("revealed", {}).get(step_key, False)
             _mn = 0
             if step.get("micro"):
-                st.markdown(micro_html(step, final_mode="none", qid=qid), unsafe_allow_html=True)
+                st.markdown(micro_html(step, final_mode="none", qid=qid, reveal=_revealed), unsafe_allow_html=True)
                 _mn = len(step["micro"])
             user_blank_inputs = []
             with st.container(key="formula_blanks_row"):
@@ -3592,7 +3645,7 @@ if qtype == "interactive":
                     with cols[col_idx]:
                         val = st.number_input(
                             label=b["label"], key=f"blank_{qid}_{s_num}_{bidx}",
-                            value=None, placeholder="..", label_visibility="collapsed"
+                            value=(float(b["target"]) if _revealed else None), placeholder="..", label_visibility="collapsed"
                         )
                         user_blank_inputs.append(val)
                     col_idx += 1
@@ -3603,7 +3656,7 @@ if qtype == "interactive":
             _mn2 = 0
             if step.get("micro2"):
                 st.markdown(
-                    micro_html(step, final_mode="none", field="micro2", start=_mn + 1, qid=qid),
+                    micro_html(step, final_mode="none", field="micro2", start=_mn + 1, qid=qid, reveal=_revealed),
                     unsafe_allow_html=True,
                 )
                 _mn2 = len(step["micro2"])
@@ -3622,7 +3675,7 @@ if qtype == "interactive":
                     with r_c2:
                         user_root_val = st.number_input(
                             label="root_val", key=f"root_{qid}_{s_num}",
-                            value=None, placeholder="..", label_visibility="collapsed"
+                            value=(float(step["root_target"]) if _revealed else None), placeholder="..", label_visibility="collapsed"
                         )
                     with r_c3:
                         st.markdown(f"<div class='formula-text'>{eq_frag(step['root_suffix'])}</div>", unsafe_allow_html=True)
@@ -3642,17 +3695,31 @@ if qtype == "interactive":
                 with rc2:
                     user_result = st.number_input(
                         _rlabel, key=f"res_{qid}_{s_num}",
-                        value=None, placeholder="..", label_visibility="collapsed"
+                        value=(float(step["result_target"]) if _revealed else None), placeholder="..", label_visibility="collapsed"
                     )
                 with rc3:
                     st.markdown(f"<div class='formula-text'>{eq_frag(_runit)}</div>", unsafe_allow_html=True)
 
             with st.container(key="step_actions_row"):
-                _bc1, _bc2 = st.columns(2)
+                _bc1, _bc2, _bc3 = st.columns(3)
                 with _bc1:
                     check_btn = st.button("تحقق 🎯", key=f"btn_{qid}_{s_num}", use_container_width=True)
                 with _bc2:
                     hint_btn = st.button("💡 تلميح", key=f"hint_{qid}_{s_num}", use_container_width=True)
+                with _bc3:
+                    reveal_btn = st.button("✅ الإجابة الصحيحة", key=f"reveal_{qid}_{s_num}",
+                                           use_container_width=True, disabled=_revealed)
+
+            if reveal_btn:
+                for _bi in range(len(step.get("blanks") or [])):
+                    st.session_state.pop(f"blank_{qid}_{s_num}_{_bi}", None)
+                st.session_state.pop(f"root_{qid}_{s_num}", None)
+                st.session_state.pop(f"res_{qid}_{s_num}", None)
+                st.session_state.setdefault("revealed", {})[step_key] = True
+                st.session_state["hint_level"][step_key] = 3
+                st.session_state["no_hint_flag"][qid] = False
+                st.toast("تم إدخال الإجابة الصحيحة في الفراغات — اضغط «تحقق 🎯» للتقدم")
+                st.rerun()
 
             st.markdown(f'<span class="points-chip">🎯 نقاط هذه المحاولة المتوقعة: {potential_points}</span>', unsafe_allow_html=True)
 
@@ -3663,16 +3730,8 @@ if qtype == "interactive":
                 st.rerun()
 
             if hint_lvl_current >= 1:
-                if hint_lvl_current == 1:
-                    msg = "ابدأ بالتعويض عن كل قيمة معطاة في نص السؤال داخل مكانها الصحيح في القانون أعلاه، بنفس الترتيب من اليسار لليمين."
-                elif hint_lvl_current == 2:
-                    substituted = step["prefix"]
-                    for b in step["blanks"]:
-                        substituted += f"({b['target']})" + b["suffix"]
-                    msg = f"عوّض القيم كالتالي: {substituted}"
-                else:
-                    msg = step["hint"]
-                st.markdown(f'<div class="hint-box">💡 <b>تلميح (مستوى {hint_lvl_current}):</b> {msg}</div>', unsafe_allow_html=True)
+                msg = rich_hint(step, hint_lvl_current)
+                st.markdown(f'<div class="hint-box">💡 <b>شرح موجّه (مستوى {hint_lvl_current}):</b>{msg}</div>', unsafe_allow_html=True)
                 if hint_lvl_current < 3:
                     st.caption("بحاجة لمساعدة أكبر؟ اضغط 💡 تلميح مرة أخرى.")
 
@@ -3754,16 +3813,12 @@ else:
 
     top_l, top_r = st.columns([4, 1])
     with top_l:
-        st.markdown(f"""
-        <div class="q-card q-card-proof">
-            <span class="type-chip-proof">📜 مسألة إثبات نظري</span>
-            <h2>{q["title"]}</h2>
-            <p style="font-size:1.15rem;">{q["text"]}</p>
-            {figure_html(qid)}
-            <div class="qprogress-bg"><div class="qprogress-fill" style="width:{q_progress_pct}%;"></div></div>
-            <small>الخطوة {min(current_step_user_at, len(q["steps"]))} من {len(q["steps"])} &nbsp;|&nbsp; ⏱️ الوقت: {fmt_time(elapsed)}</small>
-        </div>
-        """, unsafe_allow_html=True)
+        render_question_card_v18(
+            key=f"{qid}_proof", title=q["title"], statement_html=q["text"],
+            figure_markup=figure_html(qid), progress_pct=q_progress_pct,
+            step_number=min(current_step_user_at, len(q["steps"])), total_steps=len(q["steps"]),
+            elapsed_label=fmt_time(elapsed), kind="proof",
+        )
     with top_r:
         st.write("")
         if st.button("🔁 إعادة حل هذا الإثبات", key=f"reset_{qid}", use_container_width=True):
@@ -3817,12 +3872,13 @@ else:
             if explain_mode:
                 st.markdown(f'<div class="explain-box">💬 {step.get("label", "")}</div>', unsafe_allow_html=True)
 
+            _revealed = st.session_state.setdefault("revealed", {}).get(step_key, False)
             _plabel = step.get("label", "")
             if step.get("micro"):
-                st.markdown(micro_html(step, final_say=_plabel, qid=qid), unsafe_allow_html=True)
+                st.markdown(micro_html(step, final_say=_plabel, qid=qid, reveal=_revealed), unsafe_allow_html=True)
             else:
                 st.markdown(
-                    micro_html(step, field="__nomicro__", final_say=_plabel, qid=qid),
+                    micro_html(step, field="__nomicro__", final_say=_plabel, qid=qid, reveal=_revealed),
                     unsafe_allow_html=True,
                 )
 
@@ -3830,23 +3886,64 @@ else:
             hint_lvl_current = st.session_state["hint_level"].get(step_key, 0)
             potential_points = calc_points(attempts_so_far + 1, hint_lvl_current)
 
-            with st.container(key="formula_proof_row"):
-                fc1, fc2, fc3 = st.columns([2, 1.3, 2])
-                with fc1:
-                    st.markdown(f"<div class='formula-text'>{eq_frag(step['prefix'])}</div>", unsafe_allow_html=True)
-                with fc2:
-                    user_val = st.text_input(
-                        "input_field", key=f"proofinput_{step_key}",
-                        placeholder="أدخل الإجابة...", label_visibility="collapsed"
-                    )
-                with fc3:
-                    st.markdown(f"<div class='formula-text'>{eq_frag(step['suffix'])}</div>", unsafe_allow_html=True)
+            _micro_only = bool(step.get("micro_only"))
+            _sym_key = f"symbuf_{step_key}"
+            _pending = st.session_state.get(_sym_key)
+            user_val = ""
+            if _micro_only:
+                st.markdown("<div class='note-box'>✅ أكمل فراغات الخطوات أعلاه بالترتيب، ثم اضغط «تحقق 🎯» للانتقال للخطوة التالية.</div>", unsafe_allow_html=True)
+            else:
+                if _pending is not None:
+                    st.session_state.pop(f"proofinput_{step_key}", None)
+                with st.container(key="formula_proof_row"):
+                    fc1, fc2, fc3 = st.columns([2, 1.3, 2])
+                    with fc1:
+                        st.markdown(f"<div class='formula-text'>{eq_frag(step['prefix'])}</div>", unsafe_allow_html=True)
+                    with fc2:
+                        user_val = st.text_input(
+                            "input_field", key=f"proofinput_{step_key}",
+                            value=(_pending if _pending is not None else (str(step["target"]) if _revealed else "")),
+                            placeholder="اكتب الإجابة أو استعمل مكتبة الرموز...", label_visibility="collapsed"
+                        )
+                    with fc3:
+                        st.markdown(f"<div class='formula-text'>{eq_frag(step['suffix'])}</div>", unsafe_allow_html=True)
+                st.session_state.pop(_sym_key, None)
+                st.markdown("<div style='text-align:right;color:#475569;font-weight:700;margin:8px 0 2px'>🔤 مكتبة الرموز — اضغط الرمز ليُضاف إلى إجابتك</div>", unsafe_allow_html=True)
+                for _r in range(0, len(SYMBOL_LIBRARY), 9):
+                    _chunk = SYMBOL_LIBRARY[_r:_r + 9]
+                    _scols = st.columns(len(_chunk))
+                    for _k2, _sym in enumerate(_chunk):
+                        with _scols[_k2]:
+                            if st.button(_sym, key=f"sym_{step_key}_{_r + _k2}", use_container_width=True):
+                                _cur = st.session_state.get(f"proofinput_{step_key}", "") or ""
+                                if _sym == "⌫":
+                                    _new_val = _cur[:-1]
+                                elif _sym == "مسح":
+                                    _new_val = ""
+                                elif _sym == "⬜":
+                                    _new_val = _cur + " "
+                                else:
+                                    _new_val = _cur + _sym
+                                st.session_state[_sym_key] = _new_val
+                                st.session_state.pop(f"proofinput_{step_key}", None)
+                                st.rerun()
 
-            btn_col, hint_col = st.columns(2)
+            btn_col, hint_col, rev_col = st.columns(3)
             with btn_col:
                 check_btn = st.button("تحقق 🎯", key=f"btn_{step_key}", use_container_width=True)
             with hint_col:
                 hint_btn = st.button("💡 تلميح", key=f"hint_{step_key}", use_container_width=True)
+            with rev_col:
+                reveal_btn = st.button("✅ الإجابة الصحيحة", key=f"reveal_{step_key}",
+                                       use_container_width=True, disabled=_revealed)
+
+            if reveal_btn:
+                st.session_state.pop(f"proofinput_{step_key}", None)
+                st.session_state.setdefault("revealed", {})[step_key] = True
+                st.session_state["hint_level"][step_key] = 2
+                st.session_state["no_hint_flag"][qid] = False
+                st.toast("تم إدخال الإجابة الصحيحة في الفراغ — اضغط «تحقق 🎯» للتقدم")
+                st.rerun()
 
             st.markdown(f'<span class="points-chip">🎯 نقاط هذه المحاولة المتوقعة: {potential_points}</span>', unsafe_allow_html=True)
 
@@ -3856,8 +3953,8 @@ else:
                 st.rerun()
 
             if hint_lvl_current >= 1:
-                msg = step["hint"] if hint_lvl_current >= 2 else "راجع القانون/المعطى المذكور أعلاه جيداً قبل التعويض."
-                st.markdown(f'<div class="hint-box">💡 <b>تلميح:</b> {msg}</div>', unsafe_allow_html=True)
+                msg = rich_hint(step, hint_lvl_current + 1)
+                st.markdown(f'<div class="hint-box">💡 <b>شرح موجّه:</b>{msg}</div>', unsafe_allow_html=True)
                 if hint_lvl_current < 2:
                     st.caption("بحاجة لمساعدة أكبر؟ اضغط 💡 تلميح مرة أخرى.")
 
@@ -3865,7 +3962,13 @@ else:
                 st.session_state["attempts"][step_key] = st.session_state["attempts"].get(step_key, 0) + 1
                 attempts_now = st.session_state["attempts"][step_key]
 
-                if not user_val or user_val.strip() == "":
+                if _micro_only:
+                    pts = calc_points(attempts_now, hint_lvl_current)
+                    st.session_state["total_xp"] += pts
+                    st.success(f"{random.choice(SUCCESS_PHRASES)} أحسنت — اكتملت خطوات التعليل! (+{pts} XP)")
+                    st.session_state[step_state_key] = s_num + 1
+                    st.rerun()
+                elif not user_val or user_val.strip() == "":
                     st.warning("الرجاء كتابة الإجابة أولاً داخل الفراغ!")
                 else:
                     is_correct = False
@@ -4517,7 +4620,7 @@ components.html(
       mirrorValue(this.value);
       scheduleCommit();
     });
-    inp.addEventListener('focus', function () { wantFocusAt = Date.now(); });
+    inp.addEventListener('focus', function () { wantFocusAt = Date.now(); showSymPadFor(this); });
     inp.addEventListener('blur', function () {
       if (committing) return;
       commitValue(this.value);
@@ -4659,7 +4762,7 @@ components.html(
 
   function wirePracticeInput(inp, line) {
     inp.addEventListener('input', function () { autoSize(this); });
-    inp.addEventListener('focus', function () { wantFocusAt = Date.now(); });
+    inp.addEventListener('focus', function () { wantFocusAt = Date.now(); showSymPadFor(this); });
     inp.addEventListener('blur', function () { tryPractice(this, line); });
     inp.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.keyCode === 13) {
@@ -4671,6 +4774,65 @@ components.html(
     });
     inp.addEventListener('mousedown', function (e) { e.stopPropagation(); });
     inp.addEventListener('click', function (e) { e.stopPropagation(); });
+  }
+
+  var SYM_LIST = ['Δ', 'ΔP', 'Δt', 'θ', 'π', '×', '÷', '√', '²', '³', '≈', '±', '→', '←', '°', 'm/s', 'm/s²', 'kg', 'N', 'N·s', 'kg·m/s', 'J', '−', '⌫'];
+  var symPadEl = null, symPadTarget = null;
+  function insertSym(sym) {
+    var el = symPadTarget;
+    if (!el || !el.parentNode) { return; }
+    var a = el.value.length, b = el.value.length;
+    try { if (el.selectionStart !== null && el.selectionStart !== undefined) { a = el.selectionStart; b = el.selectionEnd; } } catch (e1) { }
+    if (sym === '⌫') {
+      var p = (a === b && a > 0) ? a - 1 : a;
+      el.value = el.value.slice(0, p) + el.value.slice(b);
+      try { el.setSelectionRange(p, p); } catch (e2) { }
+    } else {
+      el.value = el.value.slice(0, a) + sym + el.value.slice(b);
+      var c = a + sym.length;
+      try { el.setSelectionRange(c, c); } catch (e3) { }
+    }
+    try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch (e4) { }
+    try { el.focus(); } catch (e5) { }
+  }
+  function ensureSymPad() {
+    if (symPadEl && symPadEl.parentNode) { return symPadEl; }
+    var pad = doc.createElement('div');
+    pad.id = 'phys-sym-pad';
+    pad.setAttribute('dir', 'rtl');
+    pad.style.cssText = 'position:fixed;z-index:99999;bottom:14px;right:14px;max-width:min(94vw,520px);padding:8px 10px;border:1px solid #cbd5e1;border-radius:14px;background:#f8fafc;box-shadow:0 10px 26px rgba(15,23,42,.2);display:none;text-align:right';
+    var head = doc.createElement('div');
+    head.style.cssText = 'display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:.85rem;color:#334155;margin-bottom:6px';
+    var ttl = doc.createElement('span');
+    ttl.textContent = '🔤 مكتبة الرموز';
+    var cls = doc.createElement('button');
+    cls.type = 'button';
+    cls.textContent = '✕';
+    cls.style.cssText = 'border:none;background:transparent;font-size:1rem;cursor:pointer;color:#64748b';
+    cls.addEventListener('click', function (e) { e.preventDefault(); pad.style.display = 'none'; });
+    head.appendChild(ttl); head.appendChild(cls);
+    pad.appendChild(head);
+    var row = doc.createElement('div');
+    row.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px';
+    for (var i = 0; i < SYM_LIST.length; i++) {
+      (function (sym) {
+        var b = doc.createElement('button');
+        b.type = 'button';
+        b.textContent = sym;
+        b.style.cssText = 'min-width:40px;padding:5px 9px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;font-size:1rem;font-weight:700;color:#0f172a;cursor:pointer';
+        b.addEventListener('mousedown', function (e) { e.preventDefault(); e.stopPropagation(); });
+        b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); insertSym(sym); });
+        row.appendChild(b);
+      })(SYM_LIST[i]);
+    }
+    pad.appendChild(row);
+    doc.body.appendChild(pad);
+    symPadEl = pad;
+    return pad;
+  }
+  function showSymPadFor(inp) {
+    symPadTarget = inp;
+    ensureSymPad().style.display = 'block';
   }
 
   function wireMicroSlots() {
@@ -5194,6 +5356,8 @@ components.html(
 )
 
 
-# FINAL_UI_V13_EXERCISE_THEME
+# FINAL_UI_V18_EXERCISE_THEME
 if st.session_state.get("samed_view") == "app":
     apply_ui_theme("exercise")
+    apply_exercise_ui_v18()
+    render_exercise_footer_v18("app.py")
