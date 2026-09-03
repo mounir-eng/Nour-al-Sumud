@@ -1,6 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from ui_theme_v13 import apply_ui_theme
+from exercise_ui_v18 import (apply_exercise_ui_v18, render_exercise_header_v18, render_question_card_v18, render_exercise_footer_v18)
 import random
 import time
 from datetime import datetime
@@ -24,6 +25,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+# طبقة v18 تُحمّل مبكرًا كي لا تبقى الصفحة على التصميم القديم.
+apply_exercise_ui_v18()
 
 # ==========================================================
 # 2. التنسيق (CSS)
@@ -1211,278 +1215,58 @@ st.markdown("""
 # ==========================================================
 # 3. بنك الأسئلة (تمارين تفاعلية + مسائل إثبات نظرية)
 # ==========================================================
-questions_db = [{'id': 'pb1',
-  'title': 'تمرين الكتاب (1) · اختر الإجابة الصحيحة',
-  'type': 'proof',
-  'focus': 'فهم المفاهيم والقوانين الأساسية',
-  'text': 'اختر الإجابة الصحيحة لكل فقرة من فقرات السؤال الأول:\n'
-          '1) ما الكمية التي تمثل المعدل الزمني للتغير في الزخم؟ (أ الدفع، ب الشغل، ج القوة، د التسارع)\n'
-          '2) جسم كتلته 2 kg سرعته 4 m/s اصطدم بحائط وارتد بالسرعة نفسها؛ ما مقدار الدفع؟ (أ 8، ب 16، ج 0، د 32)\n'
-          '3) ماذا يمثل ميل منحنى الزخم–الزمن؟ (أ الزخم، ب مقلوب الدفع، ج الطاقة الحركية، د القوة)\n'
-          '4) جسم كتلته 0.5 kg سقط من ارتفاع 1.8 m؛ ما زخمه عند الأرض؟ (أ 5، ب 6، ج 3، د 9)\n'
-          '5) قمر صناعي أكمل نصف مدار؛ ما مقدار التغير في زخمه؟ (أ 0، ب ½mv، ج mv، د 2mv)\n'
-          '6) جسم كتلته 4 kg وسرعته 2 m/s أثرت فيه قوة 8 N لمدة 5 s؛ ما زخمه النهائي؟ (أ 32، ب 8، ج 40، د 48)\n'
-          '7) كرة كتلتها 0.2 kg سرعتها 40 m/s ارتدت بسرعة 50 m/s خلال 0.2 s؛ ما متوسط القوة؟ (أ 18، ب 10، ج 90، د '
-          '2)\n'
-          '8) ماذا تمثل المساحة تحت منحنى القوة–الزمن؟ (أ التغير في السرعة، ب التسارع، ج الدفع، د الزخم)\n'
-          '9) رجل وولد على أرض جليدية دفع أحدهما الآخر؛ ما تغير زخم النظام؟ (أ 0، ب 100، ج 140، د 240)\n'
-          '10) إذا عُلم الدفع المؤثر وكتلة الجسم، فما الذي يمكن حسابه؟ (أ السرعة الابتدائية، ب النهائية، ج التسارع، '
-          'د التغير في السرعة)\n'
-          '11) قذيفة 2 kg انطلقت بسرعة 200 m/s من مدفع ساكن كتلته 500 kg؛ ما مقدار سرعة ارتداد المدفع؟ (أ 1.25، ب '
-          '0.75، ج 0.8، د 2.5)',
-  'conclusion': 'الإجابات النموذجية بالترتيب: ج، ب، د، ج، د، د، ج، ج، أ، د، ج.',
-  'steps': [{'num': 1,
-             'title': 'الفقرة 1: المعدل الزمني للتغير في الزخم',
-             'law': 'F = ΔP/Δt',
-             'micro': [['اكتب صيغة القانون الثاني لنيوتن:', 'F = ΔP/Δt'],
-                       ['طابق التعريف مع الخيار:', 'الخيار = ?', 'ج']],
-             'type': 'symbol',
-             'latex_preview': 'F = ΔP/Δt',
-             'prefix': 'رمز الخيار = ',
-             'label': 'اكتب رمز الخيار الصحيح:',
-             'suffix': '',
-             'target': 'ج',
-             'completed_display': 'الإجابة الصحيحة: ج — القوة',
-             'hint': 'اتبع العلاقة ثم اختر رمز الإجابة الصحيحة.'},
-            {'num': 2,
-             'title': 'الفقرة 2: دفع جسم يرتد عن الحائط',
-             'law': '|I| = |m(v_f − v_i)|',
-             'micro': [['اختر اتجاه الحركة الابتدائية موجبًا:', 'v_i = +4 m/s'],
-                       ['بعد الارتداد:', 'v_f = −4 m/s'],
-                       ['احسب مقدار الدفع:', '|I| = 2|−4−4| = 16 N·s'],
-                       ['طابق النتيجة مع الخيار:', 'الخيار = ?', 'ب']],
-             'type': 'symbol',
-             'latex_preview': '|I| = |m(v_f − v_i)|',
-             'prefix': 'رمز الخيار = ',
-             'label': 'اكتب رمز الخيار الصحيح:',
-             'suffix': '',
-             'target': 'ب',
-             'completed_display': 'الإجابة الصحيحة: ب — 16 N·s',
-             'hint': 'اتبع العلاقة ثم اختر رمز الإجابة الصحيحة.'},
-            {'num': 3,
-             'title': 'الفقرة 3: ميل منحنى الزخم–الزمن',
-             'law': 'slope = ΔP/Δt = F',
-             'micro': [['ميل المنحنى:', 'slope = ΔP/Δt'],
-                       ['وبحسب القانون الثاني:', 'ΔP/Δt = F'],
-                       ['الخيار = ?', '', 'د']],
-             'type': 'symbol',
-             'latex_preview': 'slope = ΔP/Δt = F',
-             'prefix': 'رمز الخيار = ',
-             'label': 'اكتب رمز الخيار الصحيح:',
-             'suffix': '',
-             'target': 'د',
-             'completed_display': 'الإجابة الصحيحة: د — القوة',
-             'hint': 'اتبع العلاقة ثم اختر رمز الإجابة الصحيحة.'},
-            {'num': 4,
-             'title': 'الفقرة 4: زخم جسم ساقط',
-             'law': 'v = √(2gh), P = mv',
-             'micro': [['حوّل الارتفاع:', 'h = 1.8 m'],
-                       ['احسب السرعة:', 'v = √(2×10×1.8) = 6 m/s'],
-                       ['احسب الزخم:', 'P = 0.5×6 = 3 kg·m/s'],
-                       ['الخيار = ?', '', 'ج']],
-             'type': 'symbol',
-             'latex_preview': 'v = √(2gh), P = mv',
-             'prefix': 'رمز الخيار = ',
-             'label': 'اكتب رمز الخيار الصحيح:',
-             'suffix': '',
-             'target': 'ج',
-             'completed_display': 'الإجابة الصحيحة: ج — 3 kg·m/s',
-             'hint': 'اتبع العلاقة ثم اختر رمز الإجابة الصحيحة.'},
-            {'num': 5,
-             'title': 'الفقرة 5: قمر صناعي بعد نصف مدار',
-             'law': 'ΔP = P_f − P_i',
-             'micro': [['بعد نصف مدار ينعكس اتجاه السرعة:', 'P_f = −mv'],
-                       ['التغير:', 'ΔP = −mv − mv = −2mv'],
-                       ['المقدار:', '|ΔP| = 2mv'],
-                       ['الخيار = ?', '', 'د']],
-             'type': 'symbol',
-             'latex_preview': 'ΔP = P_f − P_i',
-             'prefix': 'رمز الخيار = ',
-             'label': 'اكتب رمز الخيار الصحيح:',
-             'suffix': '',
-             'target': 'د',
-             'completed_display': 'الإجابة الصحيحة: د — 2mv',
-             'hint': 'اتبع العلاقة ثم اختر رمز الإجابة الصحيحة.'},
-            {'num': 6,
-             'title': 'الفقرة 6: الزخم بعد تأثير قوة',
-             'law': 'P_f = P_i + I',
-             'micro': [['الزخم الابتدائي:', 'P_i = 4×2 = 8'],
-                       ['الدفع:', 'I = 8×5 = 40'],
-                       ['الزخم النهائي:', 'P_f = 8+40 = 48'],
-                       ['الخيار = ?', '', 'د']],
-             'type': 'symbol',
-             'latex_preview': 'P_f = P_i + I',
-             'prefix': 'رمز الخيار = ',
-             'label': 'اكتب رمز الخيار الصحيح:',
-             'suffix': '',
-             'target': 'د',
-             'completed_display': 'الإجابة الصحيحة: د — 48 kg·m/s',
-             'hint': 'اتبع العلاقة ثم اختر رمز الإجابة الصحيحة.'},
-            {'num': 7,
-             'title': 'الفقرة 7: متوسط قوة المضرب',
-             'law': 'F_avg = ΔP/Δt',
-             'micro': [['اختر الاتجاه نحو المضرب موجبًا:', 'v_i = +40, v_f = −50'],
-                       ['التغير في الزخم:', 'ΔP = 0.2(−50−40) = −18'],
-                       ['مقدار القوة:', '|F| = 18/0.2 = 90 N'],
-                       ['الخيار = ?', '', 'ج']],
-             'type': 'symbol',
-             'latex_preview': 'F_avg = ΔP/Δt',
-             'prefix': 'رمز الخيار = ',
-             'label': 'اكتب رمز الخيار الصحيح:',
-             'suffix': '',
-             'target': 'ج',
-             'completed_display': 'الإجابة الصحيحة: ج — 90 N',
-             'hint': 'اتبع العلاقة ثم اختر رمز الإجابة الصحيحة.'},
-            {'num': 8,
-             'title': 'الفقرة 8: المساحة تحت منحنى القوة–الزمن',
-             'law': 'I = area under F–t graph',
-             'micro': [['المساحة تحت منحنى القوة–الزمن:', '∫F dt = I'], ['الخيار = ?', '', 'ج']],
-             'type': 'symbol',
-             'latex_preview': 'I = area under F–t graph',
-             'prefix': 'رمز الخيار = ',
-             'label': 'اكتب رمز الخيار الصحيح:',
-             'suffix': '',
-             'target': 'ج',
-             'completed_display': 'الإجابة الصحيحة: ج — الدفع',
-             'hint': 'اتبع العلاقة ثم اختر رمز الإجابة الصحيحة.'},
-            {'num': 9,
-             'title': 'الفقرة 9: رجل وولد على أرض جليدية',
-             'law': 'ΔP_system = 0 for isolated system',
-             'micro': [['القوى بين الرجل والولد داخلية:', 'F_ext = 0'],
-                       ['إذن زخم النظام محفوظ:', 'ΔP_system = 0'],
-                       ['الخيار = ?', '', 'أ']],
-             'type': 'symbol',
-             'latex_preview': 'ΔP_system = 0 for isolated system',
-             'prefix': 'رمز الخيار = ',
-             'label': 'اكتب رمز الخيار الصحيح:',
-             'suffix': '',
-             'target': 'أ',
-             'completed_display': 'الإجابة الصحيحة: أ — 0 kg·m/s',
-             'hint': 'اتبع العلاقة ثم اختر رمز الإجابة الصحيحة.'},
-            {'num': 10,
-             'title': 'الفقرة 10: ما الذي يحسب من الدفع والكتلة؟',
-             'law': 'I = mΔv',
-             'micro': [['أعد ترتيب العلاقة:', 'Δv = I/m'], ['الخيار = ?', '', 'د']],
-             'type': 'symbol',
-             'latex_preview': 'I = mΔv',
-             'prefix': 'رمز الخيار = ',
-             'label': 'اكتب رمز الخيار الصحيح:',
-             'suffix': '',
-             'target': 'د',
-             'completed_display': 'الإجابة الصحيحة: د — التغير في السرعة',
-             'hint': 'اتبع العلاقة ثم اختر رمز الإجابة الصحيحة.'},
-            {'num': 11,
-             'title': 'الفقرة 11: ارتداد المدفع',
-             'law': 'ΣP_i = ΣP_f',
-             'micro': [['قبل الإطلاق:', 'ΣP_i = 0'],
-                       ['بعد الإطلاق:', '0 = 2×200 + 500v_g'],
-                       ['سرعة المدفع:', 'v_g = −0.8 m/s'],
-                       ['الخيار = ?', '', 'ج']],
-             'type': 'symbol',
-             'latex_preview': 'ΣP_i = ΣP_f',
-             'prefix': 'رمز الخيار = ',
-             'label': 'اكتب رمز الخيار الصحيح:',
-             'suffix': '',
-             'target': 'ج',
-             'completed_display': 'الإجابة الصحيحة: ج — 0.8 m/s عكس القذيفة',
-             'hint': 'اتبع العلاقة ثم اختر رمز الإجابة الصحيحة.'}]},
- {'id': 'pb2',
-  'title': 'تمرين الكتاب (2) · تعريفات أساسية',
-  'type': 'proof',
-  'focus': 'صياغة المفهوم بدقة',
-  'text': 'وضح المقصود بكل من: الزخم، الدفع، النظام المعزول.',
-  'conclusion': 'الزخم والدفع كميتان متجهتان، ويُحفظ زخم النظام المعزول.',
-  'steps': [{'num': 1,
-             'title': 'تعريف الزخم',
-             'law': 'P = mv',
-             'micro': [['العلاقة:', 'P = mv'], ['طبيعة الكمية:', 'الزخم كمية ?', 'متجهة']],
-             'type': 'symbol',
-             'latex_preview': 'P = mv',
-             'prefix': 'الإجابة = ',
-             'label': 'اكتب الإجابة المختصرة:',
-             'suffix': '',
-             'target': 'كمية متجهة تساوي حاصل ضرب الكتلة في السرعة',
-             'completed_display': 'الزخم: كمية فيزيائية متجهة تساوي حاصل ضرب كتلة الجسم في سرعته، واتجاهها اتجاه '
-                                  'السرعة.',
-             'hint': 'اذكر أنه كمية متجهة واربطه بالكتلة والسرعة.'},
-            {'num': 2,
-             'title': 'تعريف الدفع',
-             'law': 'I = F_avg Δt',
-             'micro': [['العلاقة:', 'I = F_avg Δt'], ['طبيعة الكمية:', 'الدفع كمية ?', 'متجهة']],
-             'type': 'symbol',
-             'latex_preview': 'I = F_avg Δt',
-             'prefix': 'الإجابة = ',
-             'label': 'اكتب الإجابة المختصرة:',
-             'suffix': '',
-             'target': 'كمية متجهة تساوي حاصل ضرب متوسط القوة في زمن تأثيرها',
-             'completed_display': 'الدفع: كمية فيزيائية متجهة تساوي حاصل ضرب متوسط القوة في زمن تأثيرها، واتجاهها '
-                                  'اتجاه القوة.',
-             'hint': 'اذكر متوسط القوة وزمن تأثيرها.'},
-            {'num': 3,
-             'title': 'تعريف النظام المعزول',
-             'law': 'ΣF_ext = 0',
-             'micro': [['شرط العزل:', 'ΣF_ext = ?', '0'], ['النتيجة:', 'ΣP = ثابت']],
-             'type': 'symbol',
-             'latex_preview': 'ΣF_ext = 0',
-             'prefix': 'الإجابة = ',
-             'label': 'اكتب الإجابة المختصرة:',
-             'suffix': '',
-             'target': 'نظام محصلة القوى الخارجية عليه تساوي صفرا',
-             'completed_display': 'النظام المعزول: نظام تكون محصلة القوى الخارجية المؤثرة عليه صفرًا؛ لذلك يبقى '
-                                  'مجموع زخمه ثابتًا.',
-             'hint': 'ابدأ بشرط محصلة القوى الخارجية.'}]},
- {'id': 'pb3',
+questions_db = [{'id': 'pb3',
   'title': 'تمرين الكتاب (3) · علّل',
   'type': 'proof',
   'focus': 'تفسير تطبيقات الدفع وحفظ الزخم',
-  'text': 'علّل: 1) قد تنكسر البيضة على الإسمنت ولا تنكسر على الرمل من الارتفاع نفسه. 2) تكون مواسير بنادق الصيد '
-          'طويلة. 3) سرعة ارتداد المدفع أقل كثيرًا من سرعة انطلاق القذيفة.',
-  'conclusion': 'زمن التأثير يضبط متوسط القوة، وحفظ الزخم يفسر اختلاف سرعتي المدفع والقذيفة.',
+  'text': 'علّل: 1) قد تنكسر البيضة على الإسمنت ولا تنكسر على الرمل من الارتفاع نفسه. 2) تكون مواسير بنادق '
+          'الصيد طويلة. 3) سرعة ارتداد المدفع أقل كثيرًا من سرعة انطلاق القذيفة.',
+  'conclusion': 'القاعدة المبسطة: زمن أطول ← قوة أقل، ودفع أكبر ← سرعة أكبر، وكتلة أكبر ← سرعة ارتداد أصغر.',
   'steps': [{'num': 1,
-             'title': 'البيضة والإسمنت والرمل',
-             'law': 'F_avg = ΔP/Δt',
-             'micro': [['نظرية الدفع–الزخم:', 'ΔP = F_avg Δt'],
-                       ['أعد ترتيبها:', 'F_avg = ΔP/Δt'],
-                       ['عند ثبات ΔP وزيادة Δt فإن القوة:', 'F_avg = ?', 'تقل']],
+             'title': '1) البيضة: لماذا ينجيها الرمل؟',
+             'law': 'F = ΔP ÷ Δt',
+             'micro': [['السقوط من الارتفاع نفسه، إذن التغير في الزخم متساوٍ:', 'ΔP واحد في الحالتين'],
+                       ['القوة = التغير في الزخم ÷ زمن التوقف:', 'F = ΔP ÷ Δt'],
+                       ['الرمل يطيل زمن التوقف، فالقوة:', 'F = ?', 'تقل']],
              'type': 'symbol',
-             'latex_preview': 'F_avg = ΔP/Δt',
+             'latex_preview': 'F = ΔP ÷ Δt',
              'prefix': 'الإجابة = ',
-             'label': 'اكتب الإجابة المختصرة:',
+             'label': 'اكتب الإجابة في سطر واحد:',
              'suffix': '',
-             'target': 'زيادة زمن التصادم تقلل القوة',
-             'completed_display': 'على الرمل يزداد زمن التصادم، ومع ثبات التغير في الزخم يقل متوسط القوة؛ لذلك تقل '
-                                  'فرصة انكسار البيضة.',
-             'hint': 'قارن زمن التوقف على الرمل بزمنه على الإسمنت.'},
+             'target': 'زمن التوقف أطول على الرمل فتقل القوة',
+             'completed_display': 'ببساطة: التغير في الزخم واحد في الحالتين، والرمل يطيل زمن التوقف؛ ولأن '
+                                  'القوة = ΔP ÷ Δt تكون القوة أصغر فلا تنكسر البيضة.',
+             'hint': 'زمن أطول ← قوة أقل.'},
             {'num': 2,
-             'title': 'لماذا ماسورة البندقية طويلة؟',
-             'law': 'I = F Δt = ΔP',
-             'micro': [['العلاقة:', 'I = F Δt'],
-                       ['مع ثبات القوة وزيادة الزمن:', 'I = ?', 'يزداد'],
-                       ['إذن:', 'ΔP = I']],
+             'title': '2) الماسورة الطويلة: لماذا تزيد السرعة؟',
+             'law': 'I = F × Δt',
+             'micro': [['الدفع = القوة × زمن تأثيرها:', 'I = F × Δt'],
+                       ['الماسورة الطويلة تبقي القوة مؤثرة زمنًا أطول:', 'Δt يزداد'],
+                       ['فيزداد الدفع، والدفع هو التغير في الزخم، إذن السرعة:', 'v = ?', 'تزداد']],
              'type': 'symbol',
-             'latex_preview': 'I = F Δt = ΔP',
+             'latex_preview': 'I = F × Δt = ΔP',
              'prefix': 'الإجابة = ',
-             'label': 'اكتب الإجابة المختصرة:',
+             'label': 'اكتب الإجابة في سطر واحد:',
              'suffix': '',
-             'target': 'زيادة زمن تأثير القوة تزيد الدفع والزخم',
-             'completed_display': 'طول الماسورة يزيد زمن تأثير القوة في القذيفة؛ فيزداد الدفع والتغير في الزخم، '
-                                  'فتخرج بسرعة أكبر.',
-             'hint': 'اربط طول الماسورة بزمن تأثير القوة.'},
+             'target': 'زمن تأثير أطول يعطي دفعًا أكبر فسرعة أكبر',
+             'completed_display': 'ببساطة: طول الماسورة يزيد زمن دفع القوة للقذيفة، فيزداد الدفع ويزداد '
+                                  'الزخم؛ فتخرج بسرعة أكبر.',
+             'hint': 'زمن أطول ← دفع أكبر ← سرعة أكبر.'},
             {'num': 3,
-             'title': 'ارتداد المدفع',
-             'law': 'm_g v_g + m_b v_b = 0',
-             'micro': [['قبل الإطلاق:', 'ΣP_i = 0'],
-                       ['بعد الإطلاق:', 'm_g v_g = −m_b v_b'],
-                       ['عند كبر m_g فإن مقدار v_g:', '|v_g| = ?', 'صغير']],
+             'title': '3) المدفع: لماذا سرعة ارتداده صغيرة؟',
+             'law': 'زخم المدفع = زخم القذيفة (مقدارًا)',
+             'micro': [['قبل الإطلاق النظام ساكن:', 'الزخم الكلي = 0'],
+                       ['بعد الإطلاق يتساوى الزخمان في المقدار:', 'm_مدفع × v_مدفع = m_قذيفة × v_قذيفة'],
+                       ['كتلة المدفع أكبر بكثير، فسرعته:', 'v_مدفع = ?', 'صغيرة']],
              'type': 'symbol',
-             'latex_preview': 'm_g v_g + m_b v_b = 0',
+             'latex_preview': 'm_g v_g = m_b v_b',
              'prefix': 'الإجابة = ',
-             'label': 'اكتب الإجابة المختصرة:',
+             'label': 'اكتب الإجابة في سطر واحد:',
              'suffix': '',
-             'target': 'كتلة المدفع كبيرة فتكون سرعة ارتداده صغيرة',
-             'completed_display': 'الزخم محفوظ ومقدارا زخمي المدفع والقذيفة متساويان ومتعاكسان؛ ولأن كتلة المدفع '
-                                  'أكبر تكون سرعة ارتداده أصغر.',
-             'hint': 'قارن الكتلتين مع تساوي مقداري الزخم.'}]},
+             'target': 'كتلة المدفع أكبر فسرعة ارتداده أصغر',
+             'completed_display': 'ببساطة: زخم المدفع يساوي زخم القذيفة في المقدار ويعاكسه في الاتجاه؛ ولأن '
+                                  'كتلة المدفع أكبر بكثير تكون سرعة ارتداده أصغر بكثير.',
+             'hint': 'الحاصل واحد: كتلة أكبر ← سرعة أصغر.'}]},
  {'id': 'pb4',
   'title': 'تمرين الكتاب (4) · الدفع والزمن',
   'type': 'interactive',
@@ -1894,6 +1678,46 @@ questions_db = [{'id': 'pb1',
              'result_tol': 0.01,
              'result_label': 'احسب F_avg (N):',
              'hint': 'استخدم الدفع الكلي حتى السكون لا الدفع عند 6 s.'}]}]
+
+# تمرين الكتاب (3) · علل — خطوات فقط دون خانة إجابة نهائية
+for _q3 in questions_db:
+    if _q3.get('id') == 'pb3':
+        for _s3 in _q3.get('steps', []):
+            _s3['micro_only'] = True
+
+PB3_CHOICES = {
+    "1": {
+        "choices": [
+            "زمن التوقف على الرمل أطول فيزداد دفع القوة، ولهذا تكون القوة المؤثرة على البيضة أصغر.",
+            "التغير في الزخم واحد في الحالتين، والرمل يُطيل زمن التوقف؛ ولأن F = ΔP ÷ Δt تصغر القوة فلا تنكسر البيضة.",
+            "الرمل يُقلل سرعة البيضة قبل وصولها فيصغر التغير في زخمها، ولهذا تصغر القوة."
+        ],
+        "answer_index": 1
+    },
+    "2": {
+        "choices": [
+            "طول الماسورة يُبقي القوة مؤثرة زمنًا أطول فيزداد الدفع I = F × Δt، والدفع هو التغير في الزخم فتخرج القذيفة بسرعة أكبر.",
+            "طول الماسورة يزيد قوة الغازات المؤثرة على القذيفة فيزداد الدفع وتزداد السرعة.",
+            "طول الماسورة يُقلل كتلة القذيفة الفعّالة، ولأن الزخم محفوظ تزداد سرعتها."
+        ],
+        "answer_index": 0
+    },
+    "3": {
+        "choices": [
+            "القوة المؤثرة على المدفع أصغر من القوة المؤثرة على القذيفة، ولهذا تكون سرعة ارتداده أصغر.",
+            "كتلة المدفع الكبيرة تجعل زخمه أصغر من زخم القذيفة، فتكون سرعة ارتداده أصغر.",
+            "الزخمان متساويان في المقدار ومتعاكسان في الاتجاه، وكتلة المدفع أكبر بكثير فتكون سرعة ارتداده أصغر بكثير."
+        ],
+        "answer_index": 2
+    }
+}
+for _q3 in questions_db:
+    if _q3.get('id') == 'pb3':
+        for _s3 in _q3.get('steps', []):
+            _c3 = PB3_CHOICES.get(str(_s3.get('num'))) or PB3_CHOICES.get(_s3.get('num'))
+            if _c3:
+                _s3['choices'] = list(_c3['choices'])
+                _s3['answer_index'] = _c3['answer_index']
 
 TOTAL_QUESTIONS = len(questions_db)
 
@@ -2671,7 +2495,7 @@ def derive_html(qid, step):
         + "</div>"
     )
 
-def micro_html(step, final_mode="preview", field="micro", start=0, final_say=None, qid=""):
+def micro_html(step, final_mode="preview", field="micro", start=0, final_say=None, qid="", reveal=False):
     """صندوق الخطوات المبسّطة: يعوّض الطالب في كل خطوة حتى يصل للعبارة الكاملة"""
     micro = step.get(field) or []
     cs = "1" if step.get("case_sensitive") else "0"
@@ -2681,6 +2505,13 @@ def micro_html(step, final_mode="preview", field="micro", start=0, final_say=Non
         say = item[0] if len(item) > 0 else ""
         eq = item[1] if len(item) > 1 else ""
         ans = item[2] if len(item) > 2 else None
+        if ans is None and eq and "=" in str(eq) and "?" not in str(eq):
+            _lhs, _rhs = str(eq).rsplit("=", 1)
+            if _rhs.strip():
+                eq, ans = _lhs + "= ?", _rhs.strip()
+        if reveal and ans is not None:
+            eq = str(eq).replace("?", str(ans).split("|")[0])
+            ans = None
         n += 1
         attrs = ' class="micro-line"'
         if ans is not None:
@@ -2697,7 +2528,7 @@ def micro_html(step, final_mode="preview", field="micro", start=0, final_say=Non
         rows.append(
             '<div class="micro-line micro-final"><span class="micro-say"><span class="micro-num">'
             + str(n) + "</span>" + _fsay + "</span>"
-            + '<div class="eq-box">' + eq_html(step.get("latex_preview", "")) + "</div></div>"
+            + '<div class="eq-box">' + eq_html(step.get("latex_preview", "") if reveal else _mask_ans(step.get("latex_preview", ""))) + "</div></div>"
         )
     return '<div class="micro-box" data-mk="' + str(field) + '">' + "".join(rows) + "</div>"
 
@@ -2825,6 +2656,70 @@ def result_html(result_text, label: str = "✅ النتيجة", pre_html: bool =
     )
 
 
+SYMBOL_LIBRARY = [
+    "Δ", "ΔP", "Δt", "θ", "π", "×", "÷", "√", "²",
+    "³", "≈", "±", "→", "←", "°", "m/s", "m/s²", "kg",
+    "N", "N·s", "kg·m/s", "J", "−", "⁄", "⬜", "⌫", "مسح",
+]
+
+
+def _mask_ans(txt):
+    """يخفي طرف المعادلة الأيمن (الإجابة) حتى لا تُعرض قبل أن يكتبها الطالب."""
+    t = str(txt or "")
+    if not t or "?" in t or "=" not in t:
+        return t
+    head, _tail = t.rsplit("=", 1)
+    if not _tail.strip():
+        return t
+    return head + "= ?"
+
+
+def _hint_micro_lines(step, field="micro", keep_last_blank=True):
+    """يشرح خطوات الحل ويكشف معادلاتها ما عدا الفراغ الأخير."""
+    rows = step.get(field) or []
+    out = []
+    for i, item in enumerate(rows):
+        say = item[0] if len(item) > 0 else ""
+        eq = item[1] if len(item) > 1 else ""
+        ans = item[2] if len(item) > 2 else None
+        if ans is not None and "?" in str(eq):
+            eq = str(eq).replace("?", str(ans).split("|")[0])
+        if keep_last_blank and i == len(rows) - 1:
+            eq = _mask_ans(eq)
+        out.append("<li><b>" + str(i + 1) + ".</b> " + str(say) + ((" <code>" + str(eq) + "</code>") if eq else "") + "</li>")
+    return "".join(out)
+
+
+def rich_hint(step, level=1):
+    """تلميح موسّع: شرح + جزء من الحل يتزايد مع المستوى."""
+    parts = []
+    if step.get("law"):
+        parts.append("<div><b>القانون المستعمل:</b> " + str(step["law"]) + "</div>")
+    if step.get("simple_explain"):
+        parts.append("<div>💬 " + str(step["simple_explain"]) + "</div>")
+    micro_html_lines = _hint_micro_lines(step, "micro", keep_last_blank=(level < 3))
+    if micro_html_lines:
+        parts.append("<div><b>خطوات الحل مفصّلة:</b><ol class=\"hint-steps\">" + micro_html_lines + "</ol></div>")
+    if level >= 2:
+        lines2 = _hint_micro_lines(step, "micro2", keep_last_blank=(level < 3))
+        if lines2:
+            parts.append("<div><b>تابع:</b><ol class=\"hint-steps\">" + lines2 + "</ol></div>")
+        if step.get("blanks"):
+            sub = str(step.get("prefix", ""))
+            for b in step["blanks"]:
+                sub += "(" + str(b["target"]) + ")" + str(b.get("suffix", ""))
+            parts.append("<div><b>هكذا يكون التعويض:</b> <code>" + sub + "</code></div>")
+            if step.get("has_root"):
+                parts.append("<div><b>تحت الجذر:</b> <code>" + str(step.get("root_prefix", "")) + " " + str(step.get("root_target", "")) + " " + str(step.get("root_suffix", "")) + "</code></div>")
+            parts.append("<div>احسب بالترتيب: ما داخل الأقواس أولاً، ثم الضرب والقسمة، واكتب الناتج في خانة "
+                         + str(step.get("result_label", "النتيجة")).strip().rstrip(":") + ".</div>")
+    if step.get("hint"):
+        parts.append("<div><b>مفتاح الفكرة:</b> " + str(step["hint"]) + "</div>")
+    if level < 3:
+        parts.append("<div><small>اضغط 💡 مرة أخرى لشرح أوسع، أو اضغط «✅ الإجابة الصحيحة» لإدخالها تلقائياً في الفراغات.</small></div>")
+    return "".join(parts)
+
+
 def calc_points(attempts_count, hint_lvl):
     hint_deduction = {0: 0, 1: 1, 2: 3, 3: 5}.get(hint_lvl, 5)
     attempts_deduction = max(0, attempts_count - 1)
@@ -2935,53 +2830,10 @@ with _pc_avatar:
 # ==========================================================
 # 6. الرأس والنصيحة اليومية
 # ==========================================================
-st.markdown("""
-<style>
-  .samed-header{
-      background: linear-gradient(135deg,#0f766e 0%,#059669 52%,#10b981 100%);
-      border-radius: 20px; padding: 18px 26px 16px; color:#fff;
-      box-shadow: 0 10px 26px rgba(5,150,105,.30);
-      margin-bottom: 14px; text-align: right;
-      border-right: 6px solid #fbbf24;
-  }
-  .samed-brand{ display:flex; align-items:center; gap:13px; }
-  .samed-mark{ font-size:36px; line-height:1; filter: drop-shadow(0 2px 5px rgba(0,0,0,.28)); }
-  .samed-txt b{ display:block; font-size:27px; font-weight:800;
-      letter-spacing:-.5px; line-height:1.3; color:#fff; }
-  .samed-txt i{ font-style:normal; display:block; font-size:12.5px;
-      color:rgba(255,255,255,.88); font-weight:600; line-height:1.5; }
-  .samed-slogan{ margin:11px 0 5px; font-size:15.5px; font-weight:700; color:#fde68a; }
-  .samed-now{ margin:0; font-size:12.5px; color:rgba(255,255,255,.82); font-weight:600; }
-  .samed-tags{ margin-top:10px; display:flex; flex-wrap:wrap; gap:7px; }
-  .samed-tags span{ font-size:11.5px; font-weight:700; padding:4px 10px;
-      border-radius:8px; background:rgba(255,255,255,.15); color:#fff; }
-  @media (max-width: 640px){
-      .samed-txt b{ font-size:21px; }
-      .samed-txt i{ font-size:11px; }
-  }
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown(f"""
-<div class="samed-header">
-    <div class="samed-brand">
-        <span class="samed-mark">{APP_ICON}</span>
-        <span class="samed-txt">
-            <b>{APP_NAME}</b>
-            <i>{APP_SUBTITLE}</i>
-        </span>
-    </div>
-    <p class="samed-slogan">« {APP_TAGLINE} »</p>
-    <p class="samed-now">📘 {APP_UNIT}</p>
-    <div class="samed-tags">
-        <span>📶 تعمل بدون إنترنت</span>
-        <span>💾 تحفظ تقدّمك</span>
-        <span>🆓 مجانية بالكامل</span>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown(f'<div class="tip-box">{st.session_state["physbook_daily_tip"]}</div>', unsafe_allow_html=True)
+render_exercise_header_v18(
+    subject="الفيزياء", track="تمارين الكتاب", unit_title="حلول تمارين الكتاب · الزخم الخطي والدفع",
+    current_page="pages/physics_textbook_exercises.py", tip=st.session_state["physbook_daily_tip"], subject_icon="⚛️",
+)
 
 # ==========================================================
 # 6.5 الصفحة الرئيسية للمنصة + التوجيه بين الواجهة والتمارين
@@ -3199,12 +3051,13 @@ if st.session_state["physbook_samed_view"] == "home":
 
     st.stop()
 
-# ---------- وضع التمارين: زر العودة إلى الواجهة ----------
-_bk1, _bk2 = st.columns([1, 4])
-with _bk1:
-    if st.button("← لوحة الطالب", key="physbook_samed_back", use_container_width=True):
-        st.session_state["samed_view"] = "dashboard"
-        st.switch_page("app.py")
+# ---------- وضع التمارين: شريط الرجوع إلى لوحة الطالب ----------
+with st.container(key="exercise_nav"):
+    _bk1, _bk2 = st.columns([1, 4])
+    with _bk1:
+        if st.button("← لوحة الطالب", key="physbook_samed_back", use_container_width=True):
+            st.session_state["samed_view"] = "dashboard"
+            st.switch_page("app.py")
 
 
 # ==========================================================
@@ -3214,14 +3067,15 @@ def display_title(item):
     icon = "🧮" if item["type"] == "interactive" else "📜"
     return f"{icon} {item['title']}"
 
-col_sel, col_toggle = st.columns([3, 1])
-with col_sel:
-    selected_title = st.selectbox(
-        "📌 اختر التمرين المراد حله تفاعلياً:",
-        [display_title(item) for item in questions_db]
-    )
-with col_toggle:
-    explain_mode = st.toggle("🔍 شرح مبسط", value=False)
+with st.container(key="exercise_controls"):
+    col_sel, col_toggle = st.columns([3, 1])
+    with col_sel:
+        selected_title = st.selectbox(
+            "📌 اختر التمرين المراد حله تفاعلياً:",
+            [display_title(item) for item in questions_db]
+        )
+    with col_toggle:
+        explain_mode = st.toggle("🔍 شرح مبسط", value=False)
 
 q = next(item for item in questions_db if display_title(item) == selected_title)
 qid = q["id"]
@@ -3271,16 +3125,13 @@ if qtype == "interactive":
 
     top_l, top_r = st.columns([4, 1])
     with top_l:
-        st.markdown(f"""
-        <div class="q-card">
-            <span class="type-chip-interactive">🧮 تمرين رقمي تفاعلي</span>
-            <h2>{q["title"]}</h2>
-            <p style="font-size:1.15rem;">{q["text"]}</p>
-            {figure_html(qid)}
-            <div class="qprogress-bg"><div class="qprogress-fill" style="width:{q_progress_pct}%;"></div></div>
-            <small>الخطوة {min(current_step_user_at, len(q["steps"]))} من {len(q["steps"])} &nbsp;|&nbsp; ⏱️ الوقت: {fmt_time(elapsed)}</small>
-        </div>
-        """, unsafe_allow_html=True)
+        # سلسلة متصلة تمنع Markdown من تفسير HTML المتداخل كنص برمجي ظاهر.
+        render_question_card_v18(
+            key=f"{qid}_interactive", title=q["title"], statement_html=q["text"],
+            figure_markup=figure_html(qid), progress_pct=q_progress_pct,
+            step_number=min(current_step_user_at, len(q["steps"])), total_steps=len(q["steps"]),
+            elapsed_label=fmt_time(elapsed), kind="interactive",
+        )
     with top_r:
         st.write("")
         if st.button("🔁 إعادة حل هذا التمرين", key=f"reset_{qid}", use_container_width=True):
@@ -3342,9 +3193,10 @@ if qtype == "interactive":
             attempts_so_far = st.session_state["physbook_attempts"].get(step_key, 0)
             hint_lvl_current = st.session_state["physbook_hint_level"].get(step_key, 0)
             potential_points = calc_points(attempts_so_far + 1, hint_lvl_current)
+            _revealed = st.session_state.setdefault("physbook_revealed", {}).get(step_key, False)
             _mn = 0
             if step.get("micro"):
-                st.markdown(micro_html(step, final_mode="none", qid=qid), unsafe_allow_html=True)
+                st.markdown(micro_html(step, final_mode="none", qid=qid, reveal=_revealed), unsafe_allow_html=True)
                 _mn = len(step["micro"])
             user_blank_inputs = []
             with st.container(key="formula_blanks_row"):
@@ -3360,7 +3212,7 @@ if qtype == "interactive":
                     with cols[col_idx]:
                         val = st.number_input(
                             label=b["label"], key=f"blank_{qid}_{s_num}_{bidx}",
-                            value=None, placeholder="..", label_visibility="collapsed"
+                            value=(float(b["target"]) if _revealed else None), placeholder="..", label_visibility="collapsed"
                         )
                         user_blank_inputs.append(val)
                     col_idx += 1
@@ -3371,7 +3223,7 @@ if qtype == "interactive":
             _mn2 = 0
             if step.get("micro2"):
                 st.markdown(
-                    micro_html(step, final_mode="none", field="micro2", start=_mn + 1, qid=qid),
+                    micro_html(step, final_mode="none", field="micro2", start=_mn + 1, qid=qid, reveal=_revealed),
                     unsafe_allow_html=True,
                 )
                 _mn2 = len(step["micro2"])
@@ -3390,7 +3242,7 @@ if qtype == "interactive":
                     with r_c2:
                         user_root_val = st.number_input(
                             label="root_val", key=f"root_{qid}_{s_num}",
-                            value=None, placeholder="..", label_visibility="collapsed"
+                            value=(float(step["root_target"]) if _revealed else None), placeholder="..", label_visibility="collapsed"
                         )
                     with r_c3:
                         st.markdown(f"<div class='formula-text'>{eq_frag(step['root_suffix'])}</div>", unsafe_allow_html=True)
@@ -3410,17 +3262,31 @@ if qtype == "interactive":
                 with rc2:
                     user_result = st.number_input(
                         _rlabel, key=f"res_{qid}_{s_num}",
-                        value=None, placeholder="..", label_visibility="collapsed"
+                        value=(float(step["result_target"]) if _revealed else None), placeholder="..", label_visibility="collapsed"
                     )
                 with rc3:
                     st.markdown(f"<div class='formula-text'>{eq_frag(_runit)}</div>", unsafe_allow_html=True)
 
             with st.container(key="step_actions_row"):
-                _bc1, _bc2 = st.columns(2)
+                _bc1, _bc2, _bc3 = st.columns(3)
                 with _bc1:
                     check_btn = st.button("تحقق 🎯", key=f"btn_{qid}_{s_num}", use_container_width=True)
                 with _bc2:
                     hint_btn = st.button("💡 تلميح", key=f"hint_{qid}_{s_num}", use_container_width=True)
+                with _bc3:
+                    reveal_btn = st.button("✅ الإجابة الصحيحة", key=f"reveal_{qid}_{s_num}",
+                                           use_container_width=True, disabled=_revealed)
+
+            if reveal_btn:
+                for _bi in range(len(step.get("blanks") or [])):
+                    st.session_state.pop(f"blank_{qid}_{s_num}_{_bi}", None)
+                st.session_state.pop(f"root_{qid}_{s_num}", None)
+                st.session_state.pop(f"res_{qid}_{s_num}", None)
+                st.session_state.setdefault("physbook_revealed", {})[step_key] = True
+                st.session_state["physbook_hint_level"][step_key] = 3
+                st.session_state["physbook_no_hint_flag"][qid] = False
+                st.toast("تم إدخال الإجابة الصحيحة في الفراغات — اضغط «تحقق 🎯» للتقدم")
+                st.rerun()
 
             st.markdown(f'<span class="points-chip">🎯 نقاط هذه المحاولة المتوقعة: {potential_points}</span>', unsafe_allow_html=True)
 
@@ -3431,16 +3297,8 @@ if qtype == "interactive":
                 st.rerun()
 
             if hint_lvl_current >= 1:
-                if hint_lvl_current == 1:
-                    msg = "ابدأ بالتعويض عن كل قيمة معطاة في نص السؤال داخل مكانها الصحيح في القانون أعلاه، بنفس الترتيب من اليسار لليمين."
-                elif hint_lvl_current == 2:
-                    substituted = step["prefix"]
-                    for b in step["blanks"]:
-                        substituted += f"({b['target']})" + b["suffix"]
-                    msg = f"عوّض القيم كالتالي: {substituted}"
-                else:
-                    msg = step["hint"]
-                st.markdown(f'<div class="hint-box">💡 <b>تلميح (مستوى {hint_lvl_current}):</b> {msg}</div>', unsafe_allow_html=True)
+                msg = rich_hint(step, hint_lvl_current)
+                st.markdown(f'<div class="hint-box">💡 <b>شرح موجّه (مستوى {hint_lvl_current}):</b>{msg}</div>', unsafe_allow_html=True)
                 if hint_lvl_current < 3:
                     st.caption("بحاجة لمساعدة أكبر؟ اضغط 💡 تلميح مرة أخرى.")
 
@@ -3522,16 +3380,12 @@ else:
 
     top_l, top_r = st.columns([4, 1])
     with top_l:
-        st.markdown(f"""
-        <div class="q-card q-card-proof">
-            <span class="type-chip-proof">📜 مسألة إثبات نظري</span>
-            <h2>{q["title"]}</h2>
-            <p style="font-size:1.15rem;">{q["text"]}</p>
-            {figure_html(qid)}
-            <div class="qprogress-bg"><div class="qprogress-fill" style="width:{q_progress_pct}%;"></div></div>
-            <small>الخطوة {min(current_step_user_at, len(q["steps"]))} من {len(q["steps"])} &nbsp;|&nbsp; ⏱️ الوقت: {fmt_time(elapsed)}</small>
-        </div>
-        """, unsafe_allow_html=True)
+        render_question_card_v18(
+            key=f"{qid}_proof", title=q["title"], statement_html=q["text"],
+            figure_markup=figure_html(qid), progress_pct=q_progress_pct,
+            step_number=min(current_step_user_at, len(q["steps"])), total_steps=len(q["steps"]),
+            elapsed_label=fmt_time(elapsed), kind="proof",
+        )
     with top_r:
         st.write("")
         if st.button("🔁 إعادة حل هذا الإثبات", key=f"reset_{qid}", use_container_width=True):
@@ -3585,12 +3439,13 @@ else:
             if explain_mode:
                 st.markdown(f'<div class="explain-box">💬 {step.get("label", "")}</div>', unsafe_allow_html=True)
 
+            _revealed = st.session_state.setdefault("physbook_revealed", {}).get(step_key, False)
             _plabel = step.get("label", "")
             if step.get("micro"):
-                st.markdown(micro_html(step, final_say=_plabel, qid=qid), unsafe_allow_html=True)
+                st.markdown(micro_html(step, final_say=_plabel, qid=qid, reveal=_revealed), unsafe_allow_html=True)
             else:
                 st.markdown(
-                    micro_html(step, field="__nomicro__", final_say=_plabel, qid=qid),
+                    micro_html(step, field="__nomicro__", final_say=_plabel, qid=qid, reveal=_revealed),
                     unsafe_allow_html=True,
                 )
 
@@ -3598,23 +3453,78 @@ else:
             hint_lvl_current = st.session_state["physbook_hint_level"].get(step_key, 0)
             potential_points = calc_points(attempts_so_far + 1, hint_lvl_current)
 
-            with st.container(key="formula_proof_row"):
-                fc1, fc2, fc3 = st.columns([2, 1.3, 2])
-                with fc1:
-                    st.markdown(f"<div class='formula-text'>{eq_frag(step['prefix'])}</div>", unsafe_allow_html=True)
-                with fc2:
-                    user_val = st.text_input(
-                        "input_field", key=f"proofinput_{step_key}",
-                        placeholder="أدخل الإجابة...", label_visibility="collapsed"
-                    )
-                with fc3:
-                    st.markdown(f"<div class='formula-text'>{eq_frag(step['suffix'])}</div>", unsafe_allow_html=True)
+            _micro_only = bool(step.get("micro_only"))
+            _choices = step.get("choices") or []
+            _pick = None
+            _sym_key = f"symbuf_{step_key}"
+            _pending = st.session_state.get(_sym_key)
+            user_val = ""
+            if _choices:
+                st.markdown("<div class='note-box'>🧠 اختر التعليل الصحيح من بين التعليلات الثلاثة أدناه:</div>", unsafe_allow_html=True)
+                _pend_pick = st.session_state.pop(f"mcqpick_{step_key}", None)
+                if _pend_pick is not None:
+                    st.session_state.pop(f"mcq_{step_key}", None)
+                _pick = st.radio(
+                    "choices", options=list(range(len(_choices))),
+                    format_func=lambda _ci: _choices[_ci], key=f"mcq_{step_key}",
+                    index=_pend_pick, label_visibility="collapsed",
+                )
+            elif _micro_only:
+                st.markdown("<div class='note-box'>✅ أكمل فراغات الخطوات أعلاه بالترتيب، ثم اضغط «تحقق 🎯» للانتقال للخطوة التالية.</div>", unsafe_allow_html=True)
+            else:
+                if _pending is not None:
+                    st.session_state.pop(f"proofinput_{step_key}", None)
+                with st.container(key="formula_proof_row"):
+                    fc1, fc2, fc3 = st.columns([2, 1.3, 2])
+                    with fc1:
+                        st.markdown(f"<div class='formula-text'>{eq_frag(step['prefix'])}</div>", unsafe_allow_html=True)
+                    with fc2:
+                        user_val = st.text_input(
+                            "input_field", key=f"proofinput_{step_key}",
+                            value=(_pending if _pending is not None else (str(step["target"]) if _revealed else "")),
+                            placeholder="اكتب الإجابة أو استعمل مكتبة الرموز...", label_visibility="collapsed"
+                        )
+                    with fc3:
+                        st.markdown(f"<div class='formula-text'>{eq_frag(step['suffix'])}</div>", unsafe_allow_html=True)
+                st.session_state.pop(_sym_key, None)
+                st.markdown("<div style='text-align:right;color:#475569;font-weight:700;margin:8px 0 2px'>🔤 مكتبة الرموز — اضغط الرمز ليُضاف إلى إجابتك</div>", unsafe_allow_html=True)
+                for _r in range(0, len(SYMBOL_LIBRARY), 9):
+                    _chunk = SYMBOL_LIBRARY[_r:_r + 9]
+                    _scols = st.columns(len(_chunk))
+                    for _k2, _sym in enumerate(_chunk):
+                        with _scols[_k2]:
+                            if st.button(_sym, key=f"sym_{step_key}_{_r + _k2}", use_container_width=True):
+                                _cur = st.session_state.get(f"proofinput_{step_key}", "") or ""
+                                if _sym == "⌫":
+                                    _new_val = _cur[:-1]
+                                elif _sym == "مسح":
+                                    _new_val = ""
+                                elif _sym == "⬜":
+                                    _new_val = _cur + " "
+                                else:
+                                    _new_val = _cur + _sym
+                                st.session_state[_sym_key] = _new_val
+                                st.session_state.pop(f"proofinput_{step_key}", None)
+                                st.rerun()
 
-            btn_col, hint_col = st.columns(2)
+            btn_col, hint_col, rev_col = st.columns(3)
             with btn_col:
                 check_btn = st.button("تحقق 🎯", key=f"btn_{step_key}", use_container_width=True)
             with hint_col:
                 hint_btn = st.button("💡 تلميح", key=f"hint_{step_key}", use_container_width=True)
+            with rev_col:
+                reveal_btn = st.button("✅ الإجابة الصحيحة", key=f"reveal_{step_key}",
+                                       use_container_width=True, disabled=_revealed)
+
+            if reveal_btn:
+                st.session_state.pop(f"proofinput_{step_key}", None)
+                if step.get("choices"):
+                    st.session_state[f"mcqpick_{step_key}"] = step.get("answer_index", 0)
+                st.session_state.setdefault("physbook_revealed", {})[step_key] = True
+                st.session_state["physbook_hint_level"][step_key] = 2
+                st.session_state["physbook_no_hint_flag"][qid] = False
+                st.toast("تم إدخال الإجابة الصحيحة في الفراغ — اضغط «تحقق 🎯» للتقدم")
+                st.rerun()
 
             st.markdown(f'<span class="points-chip">🎯 نقاط هذه المحاولة المتوقعة: {potential_points}</span>', unsafe_allow_html=True)
 
@@ -3624,8 +3534,8 @@ else:
                 st.rerun()
 
             if hint_lvl_current >= 1:
-                msg = step["hint"] if hint_lvl_current >= 2 else "راجع القانون/المعطى المذكور أعلاه جيداً قبل التعويض."
-                st.markdown(f'<div class="hint-box">💡 <b>تلميح:</b> {msg}</div>', unsafe_allow_html=True)
+                msg = rich_hint(step, hint_lvl_current + 1)
+                st.markdown(f'<div class="hint-box">💡 <b>شرح موجّه:</b>{msg}</div>', unsafe_allow_html=True)
                 if hint_lvl_current < 2:
                     st.caption("بحاجة لمساعدة أكبر؟ اضغط 💡 تلميح مرة أخرى.")
 
@@ -3633,7 +3543,24 @@ else:
                 st.session_state["physbook_attempts"][step_key] = st.session_state["physbook_attempts"].get(step_key, 0) + 1
                 attempts_now = st.session_state["physbook_attempts"][step_key]
 
-                if not user_val or user_val.strip() == "":
+                if _choices:
+                    if _pick is None:
+                        st.warning("اختر أحد التعليلات أولاً!")
+                    elif _pick == step.get("answer_index", 0):
+                        pts = calc_points(attempts_now, hint_lvl_current)
+                        st.session_state["physbook_total_xp"] += pts
+                        st.success(f"{random.choice(SUCCESS_PHRASES)} تعليل صحيح! (+{pts} XP)")
+                        st.session_state[step_state_key] = s_num + 1
+                        st.rerun()
+                    else:
+                        st.error("التعليل قريب لكنه غير دقيق — راجع خطوات الحل أعلاه ثم اختر مرة أخرى. ❌")
+                elif _micro_only:
+                    pts = calc_points(attempts_now, hint_lvl_current)
+                    st.session_state["physbook_total_xp"] += pts
+                    st.success(f"{random.choice(SUCCESS_PHRASES)} أحسنت — اكتملت خطوات التعليل! (+{pts} XP)")
+                    st.session_state[step_state_key] = s_num + 1
+                    st.rerun()
+                elif not user_val or user_val.strip() == "":
                     st.warning("الرجاء كتابة الإجابة أولاً داخل الفراغ!")
                 else:
                     is_correct = False
@@ -4272,7 +4199,7 @@ components.html(
       mirrorValue(this.value);
       scheduleCommit();
     });
-    inp.addEventListener('focus', function () { wantFocusAt = Date.now(); });
+    inp.addEventListener('focus', function () { wantFocusAt = Date.now(); showSymPadFor(this); });
     inp.addEventListener('blur', function () {
       if (committing) return;
       commitValue(this.value);
@@ -4414,7 +4341,7 @@ components.html(
 
   function wirePracticeInput(inp, line) {
     inp.addEventListener('input', function () { autoSize(this); });
-    inp.addEventListener('focus', function () { wantFocusAt = Date.now(); });
+    inp.addEventListener('focus', function () { wantFocusAt = Date.now(); showSymPadFor(this); });
     inp.addEventListener('blur', function () { tryPractice(this, line); });
     inp.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.keyCode === 13) {
@@ -4426,6 +4353,65 @@ components.html(
     });
     inp.addEventListener('mousedown', function (e) { e.stopPropagation(); });
     inp.addEventListener('click', function (e) { e.stopPropagation(); });
+  }
+
+  var SYM_LIST = ['Δ', 'ΔP', 'Δt', 'θ', 'π', '×', '÷', '√', '²', '³', '≈', '±', '→', '←', '°', 'm/s', 'm/s²', 'kg', 'N', 'N·s', 'kg·m/s', 'J', '−', '⌫'];
+  var symPadEl = null, symPadTarget = null;
+  function insertSym(sym) {
+    var el = symPadTarget;
+    if (!el || !el.parentNode) { return; }
+    var a = el.value.length, b = el.value.length;
+    try { if (el.selectionStart !== null && el.selectionStart !== undefined) { a = el.selectionStart; b = el.selectionEnd; } } catch (e1) { }
+    if (sym === '⌫') {
+      var p = (a === b && a > 0) ? a - 1 : a;
+      el.value = el.value.slice(0, p) + el.value.slice(b);
+      try { el.setSelectionRange(p, p); } catch (e2) { }
+    } else {
+      el.value = el.value.slice(0, a) + sym + el.value.slice(b);
+      var c = a + sym.length;
+      try { el.setSelectionRange(c, c); } catch (e3) { }
+    }
+    try { el.dispatchEvent(new Event('input', { bubbles: true })); } catch (e4) { }
+    try { el.focus(); } catch (e5) { }
+  }
+  function ensureSymPad() {
+    if (symPadEl && symPadEl.parentNode) { return symPadEl; }
+    var pad = doc.createElement('div');
+    pad.id = 'phys-sym-pad';
+    pad.setAttribute('dir', 'rtl');
+    pad.style.cssText = 'position:fixed;z-index:99999;bottom:14px;right:14px;max-width:min(94vw,520px);padding:8px 10px;border:1px solid #cbd5e1;border-radius:14px;background:#f8fafc;box-shadow:0 10px 26px rgba(15,23,42,.2);display:none;text-align:right';
+    var head = doc.createElement('div');
+    head.style.cssText = 'display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:.85rem;color:#334155;margin-bottom:6px';
+    var ttl = doc.createElement('span');
+    ttl.textContent = '🔤 مكتبة الرموز';
+    var cls = doc.createElement('button');
+    cls.type = 'button';
+    cls.textContent = '✕';
+    cls.style.cssText = 'border:none;background:transparent;font-size:1rem;cursor:pointer;color:#64748b';
+    cls.addEventListener('click', function (e) { e.preventDefault(); pad.style.display = 'none'; });
+    head.appendChild(ttl); head.appendChild(cls);
+    pad.appendChild(head);
+    var row = doc.createElement('div');
+    row.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px';
+    for (var i = 0; i < SYM_LIST.length; i++) {
+      (function (sym) {
+        var b = doc.createElement('button');
+        b.type = 'button';
+        b.textContent = sym;
+        b.style.cssText = 'min-width:40px;padding:5px 9px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;font-size:1rem;font-weight:700;color:#0f172a;cursor:pointer';
+        b.addEventListener('mousedown', function (e) { e.preventDefault(); e.stopPropagation(); });
+        b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); insertSym(sym); });
+        row.appendChild(b);
+      })(SYM_LIST[i]);
+    }
+    pad.appendChild(row);
+    doc.body.appendChild(pad);
+    symPadEl = pad;
+    return pad;
+  }
+  function showSymPadFor(inp) {
+    symPadTarget = inp;
+    ensureSymPad().style.display = 'block';
   }
 
   function wireMicroSlots() {
@@ -4900,5 +4886,7 @@ components.html(
 )
 
 
-# FINAL_UI_V13_EXERCISE_THEME
+# FINAL_UI_V18_EXERCISE_THEME
 apply_ui_theme("exercise")
+apply_exercise_ui_v18()
+render_exercise_footer_v18("pages/physics_textbook_exercises.py")
